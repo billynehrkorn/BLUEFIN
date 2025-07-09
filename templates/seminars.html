@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bluefin CRM - Seminars</title>
+  <style>
+    :root {
+      --primary: #004080;
+      --sidebar-bg: #f0f0f0;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --accent: #0066cc;
+      --border: #e0e0e0;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --radius: 8px;
+      --header-height: 60px;
+      --sidebar-width: 200px;
+      --spacing: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+      color: var(--text);
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--spacing);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      box-shadow: 0 2px 4px var(--shadow);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo img {
+      height: 32px;
+      width: auto;
+    }
+
+    .view-toggle {
+      display: flex;
+      align-items: center;
+      margin-left: 20px;
+    }
+
+    .view-toggle a {
+      color: white;
+      text-decoration: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      margin-right: 10px;
+      transition: background-color 0.2s;
+    }
+
+    .view-toggle a.active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .view-toggle a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-account {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: white;
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+
+    .user-account:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .user-account svg {
+      flex-shrink: 0;
+    }
+
+    .user-menu a {
+      color: white;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      transition: background-color 0.2s;
+    }
+
+    .user-menu a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-container {
+      display: flex;
+      margin-top: var(--header-height);
+      min-height: calc(100vh - var(--header-height));
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--sidebar-bg);
+      padding: var(--spacing) 0;
+      flex-shrink: 0;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+    }
+
+    /* Fixed sidebar styling */
+    .sidebar-menu li {
+      padding: 0;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .sidebar-menu li a,
+    .sidebar-menu li .sidebar-item {
+      display: block;
+      padding: 12px var(--spacing);
+      color: inherit;
+      text-decoration: none;
+      width: 100%;
+      transition: background-color 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-menu li:hover a,
+    .sidebar-menu li:hover .sidebar-item {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .sidebar-menu li.active a,
+    .sidebar-menu li.active .sidebar-item {
+      background-color: rgba(0, 0, 0, 0.1);
+      border-left: 3px solid var(--accent);
+      font-weight: 500;
+    }
+
+    .sidebar-menu li .sidebar-item.disabled {
+      color: #999;
+      cursor: not-allowed;
+    }
+
+    .sidebar-menu li .sidebar-item.disabled:hover {
+      background-color: transparent;
+    }
+
+    .content {
+      flex: 1;
+      padding: var(--spacing);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .promo-box {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px var(--shadow);
+      padding: 3rem 2.5rem;
+      max-width: 600px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .promo-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .billy-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #e0f0ff, #cce7ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 3rem;
+      color: var(--primary);
+      box-shadow: 0 4px 16px rgba(0, 64, 128, 0.2);
+      border: 3px solid white;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .promo-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .promo-date {
+      color: var(--accent);
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      font-weight: 600;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .promo-message {
+      font-size: 1.2rem;
+      color: #444;
+      margin-bottom: 2.5rem;
+      line-height: 1.6;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .promo-message b {
+      color: var(--primary);
+    }
+
+    .promo-signature {
+      font-size: 1.2rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px solid #f0f0f0;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        padding: 0;
+      }
+
+      .sidebar-menu {
+        display: flex;
+        overflow-x: auto;
+        padding: 0 var(--spacing);
+      }
+
+      .sidebar-menu li {
+        flex-shrink: 0;
+      }
+
+      .promo-box {
+        margin: 1rem;
+        padding: 2rem 1.5rem;
+      }
+
+      .promo-title {
+        font-size: 2rem;
+      }
+
+      .billy-avatar {
+        width: 80px;
+        height: 80px;
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center;">
+      <div class="logo">
+        <img src="/static/logo.png" alt="Bluefin Logo">
+        Bluefin CRM
+      </div>
+      <div class="view-toggle">
+        <a href="/contacts">Card View</a>
+        <a href="/spreadsheet">Spreadsheet</a>
+        <a href="/analytics&reports">Analytics & Reports</a>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="user-menu">
+        <div class="user-account">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Account</span>
+        </div>
+        <a href="/logout">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <aside class="sidebar">
+      <ul class="sidebar-menu">
+        <li><a href="/" class="sidebar-item">Today</a></li>
+        <li><span class="sidebar-item disabled">Calendar</span></li>
+        <li><a href="/contacts" class="sidebar-item">Contacts</a></li>
+        <li><span class="sidebar-item disabled">Reports</span></li>
+        <li><a href="/opportunities" class="sidebar-item">Opportunities</a></li>
+        <li class="active"><a href="/seminars" class="sidebar-item">Seminars</a></li>
+        <li><span class="sidebar-item disabled">Workflows</span></li>
+        <li><a href="/analytics&reports" class="sidebar-item">Analytics & Reports</a></li>
+      </ul>
+    </aside>
+
+    <main class="content">
+      <div class="promo-box">
+        <div class="billy-avatar">🐟</div>
+        <div class="promo-title">Welcome to Bluefin CRM Seminars!</div>
+        <div class="promo-date">July 9th, 2025</div>
+        <div class="promo-message">
+          Hi there! I'm <b>Bluefin Billy</b> 🐟, your friendly CRM guide.<br><br>
+          Join us for an exciting seminar to learn all about Bluefin CRM!<br>
+          Discover how to manage your contacts, track your business, and make your workflow smooth and efficient.<br><br>
+          <b>Don't miss out on exclusive tips, live demos, and a chance to ask your questions!</b>
+        </div>
+        <div class="promo-signature">See you there!<br>— Bluefin Billy</div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

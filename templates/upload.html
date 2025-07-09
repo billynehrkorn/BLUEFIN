@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bluefin CRM - Upload Contacts</title>
+  <style>
+    :root {
+      --primary: #004080;
+      --sidebar-bg: #f0f0f0;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --accent: #0066cc;
+      --border: #e0e0e0;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --radius: 8px;
+      --header-height: 60px;
+      --sidebar-width: 200px;
+      --spacing: 16px;
+      --success: #28a745;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --light-gray: #f8f9fa;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+      color: var(--text);
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--spacing);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      box-shadow: 0 2px 4px var(--shadow);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo img {
+      height: 32px;
+      width: auto;
+    }
+
+    .back-button {
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-container {
+      display: flex;
+      margin-top: var(--header-height);
+      min-height: calc(100vh - var(--header-height));
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--sidebar-bg);
+      padding: var(--spacing) 0;
+      flex-shrink: 0;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+    }
+
+    .sidebar-menu li {
+      padding: 12px var(--spacing);
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .sidebar-menu li:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .sidebar-menu li.active {
+      background-color: rgba(0, 0, 0, 0.1);
+      border-left: 3px solid var(--accent);
+    }
+
+    .content {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .upload-container {
+      background: white;
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: 0 2px 8px var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+
+    .upload-section {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 3rem;
+      text-align: center;
+      transition: all 0.2s;
+      cursor: pointer;
+      margin-bottom: 2rem;
+    }
+
+    .upload-section:hover {
+      border-color: var(--accent);
+      background-color: #f0f8ff;
+    }
+
+    .upload-section.dragover {
+      border-color: var(--accent);
+      background-color: #f0f8ff;
+    }
+
+    .upload-icon {
+      font-size: 3rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .upload-text {
+      font-size: 1.2rem;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-subtext {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #0055aa;
+    }
+
+    .btn-secondary {
+      background-color: white;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    .btn-secondary:hover {
+      background-color: #f0f8ff;
+    }
+
+    .btn-success {
+      background-color: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #218838;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .instructions {
+      background: var(--light-gray);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .instructions h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .instructions ul {
+      margin-left: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .instructions li {
+      margin-bottom: 0.5rem;
+    }
+
+    .preview-section {
+      background: white;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px var(--shadow);
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .preview-section.active {
+      display: block;
+    }
+
+    .preview-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .preview-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+    }
+
+    .preview-table th,
+    .preview-table td {
+      padding: 8px 12px;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+
+    .preview-table th {
+      background-color: var(--light-gray);
+      font-weight: 600;
+    }
+
+    .preview-table tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+
+    .stats {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+    }
+
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+
+    .alert-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background-color: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background-color: var(--accent);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        padding: 1rem;
+      }
+
+      .stats {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <div class="logo">
+        <img src="/static/logo.png" alt="Bluefin Logo">
+        Bluefin CRM
+      </div>
+      <a href="card.html" class="back-button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+        Back to Contacts
+      </a>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <aside class="sidebar">
+      <ul class="sidebar-menu">
+        <li>Today</li>
+        <li>Calendar</li>
+        <li class="active">Contacts</li>
+        <li>Reports</li>
+        <li>Opportunities</li>
+        <li>Seminars</li>
+        <li>Workflows</li>
+      </ul>
+    </aside>
+
+    <main class="content">
+      <div class="upload-container">
+        <h1 class="page-title">Upload Contacts</h1>
+        <p class="page-subtitle">Import multiple contacts from a CSV file</p>
+
+        <div class="instructions">
+          <h3>CSV File Format Requirements:</h3>
+          <ul>
+            <li><strong>Column A (A1):</strong> "Name" - Contact's full name</li>
+            <li><strong>Column B (B1):</strong> "Email" - Contact's email address (optional)</li>
+            <li><strong>Column C (C1):</strong> "Phone" - Contact's phone number (optional)</li>
+            <li><strong>Column D (D1):</strong> "Firm" - Contact's company/firm (optional)</li>
+            <li><strong>Column E (E1):</strong> "Address" - Contact's address (optional)</li>
+            <li>Each row below the headers should contain one contact's information</li>
+            <li>Empty cells are allowed - missing information will be left blank</li>
+            <li>Only the Name column is required</li>
+          </ul>
+        </div>
+
+        <div class="upload-section" id="upload-section">
+          <div class="upload-icon">📁</div>
+          <div class="upload-text">Click to select CSV file or drag and drop</div>
+          <div class="upload-subtext">Supported format: .csv files only</div>
+          <input type="file" id="csv-file-input" class="file-input" accept=".csv" />
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn btn-secondary" onclick="document.getElementById('csv-file-input').click()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7,10 12,15 17,10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Choose File
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-section" id="preview-section">
+        <h2 class="preview-title">Preview Contacts</h2>
+
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-number" id="total-contacts">0</div>
+            <div class="stat-label">Total Contacts</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="valid-contacts">0</div>
+            <div class="stat-label">Valid Contacts</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="invalid-contacts">0</div>
+            <div class="stat-label">Invalid Contacts</div>
+          </div>
+        </div>
+
+        <div id="alerts-container"></div>
+
+        <div style="max-height: 400px; overflow-y: auto; margin-bottom: 1.5rem;">
+          <table class="preview-table" id="preview-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Firm</th>
+                <th>Address</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="preview-tbody">
+            </tbody>
+          </table>
+        </div>
+
+        <div class="progress-bar" id="progress-bar" style="display: none;">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn btn-secondary" id="cancel-btn">Cancel</button>
+          <button class="btn btn-success" id="import-btn" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20,6 9,17 4,12"></polyline>
+            </svg>
+            Import Contacts
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let parsedContacts = [];
+    let validContacts = [];
+    let invalidContacts = [];
+
+    // File input handling
+    const fileInput = document.getElementById('csv-file-input');
+    const uploadSection = document.getElementById('upload-section');
+    const previewSection = document.getElementById('preview-section');
+
+    // Upload section click handler
+    uploadSection.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    // Drag and drop handlers
+    uploadSection.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadSection.classList.add('dragover');
+    });
+
+    uploadSection.addEventListener('dragleave', () => {
+      uploadSection.classList.remove('dragover');
+    });
+
+    uploadSection.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadSection.classList.remove('dragover');
+
+      const files = e.dataTransfer.files;
+      if (files.length > 0 && files[0].type === 'text/csv') {
+        handleFile(files[0]);
+      } else {
+        showAlert('Please drop a valid CSV file.', 'danger');
+      }
+    });
+
+    // File input change handler
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleFile(e.target.files[0]);
+      }
+    });
+
+    // Handle file processing
+    function handleFile(file) {
+      if (file.type !== 'text/csv') {
+        showAlert('Please select a CSV file.', 'danger');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const csv = e.target.result;
+        parseCSV(csv);
+      };
+      reader.readAsText(file);
+    }
+
+    // Parse CSV content
+    function parseCSV(csvContent) {
+      const lines = csvContent.split('\n').filter(line => line.trim() !== '');
+
+      if (lines.length < 2) {
+        showAlert('CSV file must contain at least a header row and one data row.', 'danger');
+        return;
+      }
+
+      // Parse header
+      const headers = parseCSVLine(lines[0]);
+
+      // Validate headers
+      const expectedHeaders = ['name', 'email', 'phone', 'firm', 'address'];
+      const headerMap = {};
+
+      headers.forEach((header, index) => {
+        const normalizedHeader = header.toLowerCase().trim();
+        if (expectedHeaders.includes(normalizedHeader)) {
+          headerMap[normalizedHeader] = index;
+        }
+      });
+
+      if (!headerMap.hasOwnProperty('name')) {
+        showAlert('CSV file must contain a "Name" column in the first row.', 'danger');
+        return;
+      }
+
+      // Parse data rows
+      parsedContacts = [];
+      validContacts = [];
+      invalidContacts = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = parseCSVLine(lines[i]);
+
+        const contact = {
+          name: (values[headerMap.name] || '').trim(),
+          email: (values[headerMap.email] || '').trim(),
+          phone: (values[headerMap.phone] || '').trim(),
+          firm: (values[headerMap.firm] || '').trim(),
+          address: (values[headerMap.address] || '').trim(),
+          rowNumber: i + 1
+        };
+
+        parsedContacts.push(contact);
+
+        // Validate contact (only name is required)
+        if (contact.name) {
+          validContacts.push(contact);
+        } else {
+          invalidContacts.push({
+            ...contact,
+            error: 'Name is required'
+          });
+        }
+      }
+
+      displayPreview();
+    }
+
+    // Parse a single CSV line (handles quoted values)
+    function parseCSVLine(line) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          result.push(current);
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+
+      result.push(current);
+      return result;
+    }
+
+    // Display preview of parsed contacts
+    function displayPreview() {
+      // Update stats
+      document.getElementById('total-contacts').textContent = parsedContacts.length;
+      document.getElementById('valid-contacts').textContent = validContacts.length;
+      document.getElementById('invalid-contacts').textContent = invalidContacts.length;
+
+      // Show alerts
+      const alertsContainer = document.getElementById('alerts-container');
+      alertsContainer.innerHTML = '';
+
+      if (validContacts.length > 0) {
+        showAlert(`Found ${validContacts.length} valid contact(s) ready to import.`, 'success');
+      }
+
+      if (invalidContacts.length > 0) {
+        showAlert(`Found ${invalidContacts.length} invalid contact(s) that will be skipped.`, 'warning');
+      }
+
+      // Populate preview table
+      const tbody = document.getElementById('preview-tbody');
+      tbody.innerHTML = '';
+
+      // Show all contacts (valid and invalid)
+      [...validContacts, ...invalidContacts].forEach(contact => {
+        const row = document.createElement('tr');
+        const isValid = validContacts.includes(contact);
+
+        if (!isValid) {
+          row.style.backgroundColor = '#fff3cd';
+        }
+
+        row.innerHTML = `
+          <td>${contact.name || '<em>Missing</em>'}</td>
+          <td>${contact.email || '<em>Not provided</em>'}</td>
+          <td>${contact.phone || '<em>Not provided</em>'}</td>
+          <td>${contact.firm || '<em>Not provided</em>'}</td>
+          <td>${contact.address || '<em>Not provided</em>'}</td>
+          <td>
+            ${isValid ?
+              '<span style="color: #28a745;">✓ Valid</span>' :
+              `<span style="color: #dc3545;">✗ ${contact.error}</span>`
+            }
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      // Enable/disable import button
+      const importBtn = document.getElementById('import-btn');
+      importBtn.disabled = validContacts.length === 0;
+
+      // Show preview section
+      previewSection.classList.add('active');
+    }
+
+    // Show alert message
+    function showAlert(message, type) {
+      const alertsContainer = document.getElementById('alerts-container');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      alertsContainer.appendChild(alert);
+    }
+
+    // Import contacts
+    document.getElementById('import-btn').addEventListener('click', async function() {
+      if (validContacts.length === 0) return;
+
+      const progressBar = document.getElementById('progress-bar');
+      const progressFill = document.getElementById('progress-fill');
+      const importBtn = this;
+
+      // Show progress bar
+      progressBar.style.display = 'block';
+      importBtn.disabled = true;
+      importBtn.textContent = 'Importing...';
+
+      // Load existing contacts
+      const existingContacts = JSON.parse(localStorage.getItem('crmContacts') || '[]');
+
+      // Import contacts with progress
+      for (let i = 0; i < validContacts.length; i++) {
+        const contact = validContacts[i];
+
+        // Add to existing contacts
+        existingContacts.push({
+          name: contact.name,
+          email: contact.email || '',
+          phone: contact.phone || '',
+          firm: contact.firm || '',
+          address: contact.address || ''
+        });
+
+        // Update progress
+        const progress = ((i + 1) / validContacts.length) * 100;
+        progressFill.style.width = `${progress}%`;
+
+        // Small delay to show progress
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      // Save to localStorage
+      localStorage.setItem('crmContacts', JSON.stringify(existingContacts));
+
+      // Show completion
+      progressFill.style.width = '100%';
+
+      setTimeout(() => {
+        showAlert(`Successfully imported ${validContacts.length} contact(s)!`, 'success');
+
+        // Reset UI
+        progressBar.style.display = 'none';
+        importBtn.textContent = 'Import Complete';
+        importBtn.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20,6 9,17 4,12"></polyline>
+          </svg>
+          Import Complete
+        `;
+
+        // Redirect after a moment
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 2000);
+      }, 500);
+    });
+
+    // Cancel button
+    document.getElementById('cancel-btn').addEventListener('click', function() {
+      if (confirm('Are you sure you want to cancel? All preview data will be lost.')) {
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
+</body>
+</html>

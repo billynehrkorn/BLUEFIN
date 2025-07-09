@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bluefin CRM - Contacts Spreadsheet</title>
+  <style>
+    :root {
+      --primary: #004080;
+      --sidebar-bg: #f0f0f0;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --accent: #0066cc;
+      --border: #e0e0e0;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --radius: 8px;
+      --header-height: 60px;
+      --sidebar-width: 200px;
+      --spacing: 16px;
+      --table-header-bg: #f5f5f5;
+      --table-row-hover: #f9f9ff;
+      --table-border: #e5e5e5;
+      --cell-active-border: #4d90fe;
+      --cell-active-bg: #f0f8ff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+      color: var(--text);
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--spacing);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      box-shadow: 0 2px 4px var(--shadow);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo img {
+      height: 32px;
+      width: auto;
+    }
+
+    .view-toggle {
+      display: flex;
+      align-items: center;
+      margin-left: 20px;
+    }
+
+    .view-toggle a {
+      color: white;
+      text-decoration: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      margin-right: 10px;
+    }
+
+    .view-toggle a.active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .view-toggle a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .search-container {
+      position: relative;
+      width: 300px;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: none;
+      outline: none;
+      font-size: 0.9rem;
+      padding-left: 35px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #777;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-account {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: white;
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+
+    .user-account:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .user-account svg {
+      flex-shrink: 0;
+    }
+
+    .user-menu a {
+      color: white;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      transition: background-color 0.2s;
+    }
+
+    .user-menu a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-container {
+      display: flex;
+      margin-top: var(--header-height);
+      min-height: calc(100vh - var(--header-height));
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--sidebar-bg);
+      padding: var(--spacing) 0;
+      flex-shrink: 0;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+    }
+
+    .sidebar-menu li {
+      padding: 12px var(--spacing);
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .sidebar-menu li:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .sidebar-menu li.active {
+      background-color: rgba(0, 0, 0, 0.1);
+      border-left: 3px solid var(--accent);
+    }
+
+    .content {
+      flex: 1;
+      padding: var(--spacing);
+      overflow-x: auto;
+    }
+
+    .spreadsheet-container {
+      background-color: white;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px var(--shadow);
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .spreadsheet-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .spreadsheet-table th {
+      background-color: var(--table-header-bg);
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      border-bottom: 2px solid var(--table-border);
+    }
+
+    .spreadsheet-table td {
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--table-border);
+      border-right: 1px solid var(--table-border);
+      transition: all 0.1s ease;
+    }
+
+    .spreadsheet-table td:last-child {
+      border-right: none;
+    }
+
+    .spreadsheet-table tr:hover {
+      background-color: var(--table-row-hover);
+    }
+
+    .editable-cell {
+      min-height: 20px;
+      outline: none;
+      cursor: cell;
+      position: relative;
+    }
+
+    .editable-cell:focus {
+      background-color: var(--cell-active-bg);
+      box-shadow: inset 0 0 0 2px var(--cell-active-border);
+    }
+
+    .column-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filter-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #666;
+      margin-left: 8px;
+    }
+
+    .filter-button:hover {
+      color: var(--accent);
+    }
+
+    .filter-dropdown {
+      position: absolute;
+      background-color: white;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px var(--shadow);
+      padding: 8px 0;
+      z-index: 100;
+      min-width: 200px;
+      display: none;
+    }
+
+    .filter-dropdown.active {
+      display: block;
+    }
+
+    .filter-dropdown input {
+      margin: 0 8px 8px;
+      padding: 6px 8px;
+      width: calc(100% - 16px);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+
+    .filter-options {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .filter-option {
+      padding: 6px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-option:hover {
+      background-color: var(--table-row-hover);
+    }
+
+    .filter-option input[type="checkbox"] {
+      margin: 0;
+      width: auto;
+    }
+
+    .filter-actions {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    .filter-actions button {
+      background: none;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      padding: 4px 8px;
+      font-size: 0.8rem;
+    }
+
+    .filter-actions button:hover {
+      text-decoration: underline;
+    }
+
+    .sort-indicator {
+      margin-left: 4px;
+      font-size: 0.8rem;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background-color: var(--table-header-bg);
+      border-bottom: 1px solid var(--table-border);
+    }
+
+    .toolbar-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .toolbar-actions button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+
+    .toolbar-actions button:hover {
+      background-color: #0055aa;
+    }
+
+    .toolbar-actions button.secondary {
+      background-color: white;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    .toolbar-actions button.secondary:hover {
+      background-color: #f0f8ff;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .open-button {
+      color: var(--accent);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+      font-size: 0.85rem;
+    }
+
+    .open-button:hover {
+      background-color: rgba(0, 102, 204, 0.1);
+    }
+
+    .delete-button {
+      color: #e53935;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+      font-size: 0.85rem;
+    }
+
+    .delete-button:hover {
+      background-color: rgba(229, 57, 53, 0.1);
+    }
+
+    .status-bar {
+      padding: 8px 16px;
+      background-color: var(--table-header-bg);
+      border-top: 1px solid var(--table-border);
+      font-size: 0.8rem;
+      color: #666;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      border-radius: var(--radius);
+      padding: 2rem;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .close-button {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-button:hover {
+      color: var(--primary);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 1.5rem;
+    }
+
+    .form-actions button {
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #0055aa;
+    }
+
+    .btn-secondary {
+      background-color: white;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    .btn-secondary:hover {
+      background-color: #f0f8ff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center;">
+      <div class="logo">
+        <img src="/static/logo.png" alt="Bluefin Logo">
+        Bluefin CRM
+      </div>
+      <div class="view-toggle">
+        <a href="/contacts">Card View</a>
+        <a href="/spreadsheet" class="active">Spreadsheet</a>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="search-container">
+        <span class="search-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+        <input type="text" placeholder="Search contacts..." id="search-input">
+      </div>
+      <div class="user-menu">
+        <div class="user-account">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Account</span>
+        </div>
+        <a href="/logout">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <aside class="sidebar">
+      <ul class="sidebar-menu">
+        <li><a href="/" class="sidebar-link{% if request.path == '/' %} active{% endif %}">Today</a></li>
+        <li><a href="#" class="sidebar-link">Calendar</a></li>
+        <li><a href="/contacts" class="sidebar-link{% if request.path == '/contacts' %} active{% endif %}">Contacts</a></li>
+        <li><a href="#" class="sidebar-link">Reports</a></li>
+        <li><a href="/opportunities" class="sidebar-link{% if request.path == '/opportunities' %} active{% endif %}">Opportunities</a></li>
+        <li><a href="/seminars" class="sidebar-link{% if request.path == '/seminars' %} active{% endif %}">Seminars</a></li>
+        <li><a href="#" class="sidebar-link">Workflows</a></li>
+        <li><a href="/analytics&reports" class="sidebar-link{% if request.path == '/analytics&reports' %} active{% endif %}">Analytics & Reports</a></li>
+      </ul>
+    </aside>
+
+    <main class="content">
+      <div class="spreadsheet-container">
+        <div class="toolbar">
+          <div class="toolbar-title">All Contacts</div>
+          <div class="toolbar-actions">
+            <button class="secondary" id="export-btn">Export</button>
+            <button class="secondary" id="upload-btn">Upload Contacts</button>
+            <button id="add-contact-btn">+ Add Contact</button>
+          </div>
+        </div>
+        <table class="spreadsheet-table" id="contacts-table">
+          <thead>
+            <tr>
+              <th>
+                <div class="column-header">
+                  <span>Name</span>
+                  <button class="filter-button" data-column="name">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                  </button>
+                </div>
+              </th>
+              <th>
+                <div class="column-header">
+                  <span>Email</span>
+                  <button class="filter-button" data-column="email">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                  </button>
+                </div>
+              </th>
+              <th>
+                <div class="column-header">
+                  <span>Phone</span>
+                  <button class="filter-button" data-column="phone">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                  </button>
+                </div>
+              </th>
+              <th>
+                <div class="column-header">
+                  <span>Firm</span>
+                  <button class="filter-button" data-column="firm">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                  </button>
+                </div>
+              </th>
+              <th>
+                <div class="column-header">
+                  <span>Address</span>
+                  <button class="filter-button" data-column="address">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                  </button>
+                </div>
+              </th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="contacts-body">
+            {% for contact in contacts %}
+            <tr>
+              <td>{{ contact['name'] }}</td>
+              <td>{{ contact['email'] }}</td>
+              <td>{{ contact['phone'] }}</td>
+              <td>{{ contact['firm'] }}</td>
+              <td>{{ contact['address'] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div class="status-bar">
+          <div id="contact-count">12 contacts</div>
+          <div>Last edited: <span id="last-edited">Never</span></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add Contact Modal -->
+  <div id="add-contact-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Add New Contact</h2>
+        <button class="close-button" id="close-modal">&times;</button>
+      </div>
+      <form id="add-contact-form" method="POST" action="/add_contact">
+        <div class="form-group">
+          <label class="form-label" for="contact-name">Name *</label>
+          <input type="text" id="contact-name" name="name" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact-email">Email *</label>
+          <input type="email" id="contact-email" name="email" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact-phone">Phone *</label>
+          <input type="tel" id="contact-phone" name="phone" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact-firm">Firm</label>
+          <input type="text" id="contact-firm" name="firm" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact-address">Address</label>
+          <input type="text" id="contact-address" name="address" class="form-input">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="cancel-btn">Cancel</button>
+          <button type="submit" class="btn-primary">Add Contact</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Filter dropdown template -->
+  <div id="filter-dropdown-template" class="filter-dropdown">
+    <input type="text" class="filter-search" placeholder="Search...">
+    <div class="filter-options">
+      <!-- Filter options will be generated by JavaScript -->
+    </div>
+    <div class="filter-actions">
+      <button class="filter-clear">Clear</button>
+      <button class="filter-apply">Apply</button>
+    </div>
+  </div>
+
+  <script>
+    // Sample contact data with addresses and firms
+    const contacts = [
+      { name: "John Smith", email: "john.smith@example.com", phone: "(555) 123-4567", firm: "Morgan Stanley", address: "123 Main St, New York, NY 10001" },
+      { name: "Sarah Johnson", email: "sarah.j@example.com", phone: "(555) 234-5678", firm: "Goldman Sachs", address: "456 Park Ave, Boston, MA 02108" },
+      { name: "Michael Brown", email: "m.brown@example.com", phone: "(555) 345-6789", firm: "JPMorgan Chase", address: "789 Oak Dr, Chicago, IL 60601" },
+      { name: "Emily Davis", email: "emily.davis@example.com", phone: "(555) 456-7890", firm: "Bank of America", address: "101 Pine St, San Francisco, CA 94101" },
+      { name: "Robert Wilson", email: "rwilson@example.com", phone: "(555) 567-8901", firm: "Wells Fargo", address: "202 Maple Rd, Seattle, WA 98101" },
+      { name: "Jennifer Lee", email: "jennifer.lee@example.com", phone: "(555) 678-9012", firm: "Citigroup", address: "303 Cedar Ln, Austin, TX 78701" },
+      { name: "David Martinez", email: "d.martinez@example.com", phone: "(555) 789-0123", firm: "UBS", address: "404 Birch Blvd, Denver, CO 80201" },
+      { name: "Lisa Anderson", email: "lisa.a@example.com", phone: "(555) 890-1234", firm: "Merrill Lynch", address: "505 Elm St, Portland, OR 97201" },
+      { name: "James Taylor", email: "james.t@example.com", phone: "(555) 901-2345", firm: "Charles Schwab", address: "606 Spruce Ave, Miami, FL 33101" },
+      { name: "Patricia Moore", email: "p.moore@example.com", phone: "(555) 012-3456", firm: "Fidelity", address: "707 Willow Way, Atlanta, GA 30301" },
+      { name: "Thomas Jackson", email: "t.jackson@example.com", phone: "(555) 123-4567", firm: "Edward Jones", address: "808 Aspen Ct, Dallas, TX 75201" },
+      { name: "Jessica White", email: "j.white@example.com", phone: "(555) 234-5678", firm: "Raymond James", address: "909 Redwood Rd, Phoenix, AZ 85001" }
+    ];
+
+    let currentFilteredContacts = [...contacts]; // Track filtered contacts for proper indexing
+
+    // Function to save contacts to localStorage
+    function saveContacts() {
+      localStorage.setItem('crmContacts', JSON.stringify(contacts));
+    }
+
+    // Function to load contacts from localStorage
+    function loadContacts() {
+      const savedContacts = localStorage.getItem('crmContacts');
+      if (savedContacts) {
+        contacts.length = 0; // Clear existing array
+        contacts.push(...JSON.parse(savedContacts)); // Add saved contacts
+        currentFilteredContacts = [...contacts]; // Update filtered contacts
+      }
+    }
+
+    // Function to update contact count
+    function updateContactCount() {
+      document.getElementById('contact-count').textContent = `${currentFilteredContacts.length} contacts`;
+    }
+
+    // Function to generate table rows with editable cells
+    function generateTableRows(contactsArray) {
+      const tableBody = document.getElementById('contacts-body');
+      tableBody.innerHTML = '';
+      currentFilteredContacts = contactsArray; // Update current filtered contacts
+
+      contactsArray.forEach((contact, displayIndex) => {
+        // Find the original index in the full contacts array
+        const originalIndex = contacts.findIndex(c =>
+          c.name === contact.name && c.email === contact.email && c.phone === contact.phone
+        );
+
+        const row = document.createElement('tr');
+        row.dataset.index = originalIndex;
+
+        // Create editable cells
+        row.innerHTML = `
+          <td><div class="editable-cell" contenteditable="true" data-field="name" data-index="${originalIndex}">${contact.name}</div></td>
+          <td><div class="editable-cell" contenteditable="true" data-field="email" data-index="${originalIndex}">${contact.email}</div></td>
+          <td><div class="editable-cell" contenteditable="true" data-field="phone" data-index="${originalIndex}">${contact.phone}</div></td>
+          <td><div class="editable-cell" contenteditable="true" data-field="firm" data-index="${originalIndex}">${contact.firm || ''}</div></td>
+          <td><div class="editable-cell" contenteditable="true" data-field="address" data-index="${originalIndex}">${contact.address || ''}</div></td>
+          <td>
+            <div class="action-buttons">
+              <button class="open-button" data-index="${originalIndex}">Open</button>
+              <button class="delete-button" data-index="${originalIndex}">Delete</button>
+            </div>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      // Add event listeners to editable cells
+      setupEditableCells();
+
+      // Add event listeners to action buttons
+      setupActionButtons();
+
+      // Update contact count
+      updateContactCount();
+    }
+
+    // Setup editable cells
+    function setupEditableCells() {
+      const cells = document.querySelectorAll('.editable-cell');
+
+      cells.forEach(cell => {
+        // Store original value when starting to edit
+        cell.addEventListener('focus', function() {
+          cell.dataset.originalValue = cell.textContent;
+        });
+
+        // Handle editing completion
+        cell.addEventListener('blur', function() {
+          const field = cell.dataset.field;
+          const index = parseInt(cell.dataset.index);
+          const newValue = cell.textContent.trim();
+
+          // Update the data if changed
+          if (newValue !== cell.dataset.originalValue) {
+            contacts[index][field] = newValue;
+            saveContacts(); // Save to localStorage
+            updateLastEdited();
+          }
+        });
+
+        // Handle keyboard events
+        cell.addEventListener('keydown', function(e) {
+          // Enter key completes editing
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            cell.blur();
+          }
+
+          // Escape key cancels editing
+          if (e.key === 'Escape') {
+            cell.textContent = cell.dataset.originalValue;
+            cell.blur();
+          }
+
+          // Tab key moves to next cell
+          if (e.key === 'Tab') {
+            e.preventDefault();
+
+            const currentRow = cell.closest('tr');
+            const currentCellIndex = Array.from(currentRow.cells).findIndex(td =>
+              td.contains(cell)
+            );
+
+            let nextCell;
+
+            if (e.shiftKey) {
+              // Move to previous cell
+              if (currentCellIndex > 0) {
+                nextCell = currentRow.cells[currentCellIndex - 1].querySelector('.editable-cell');
+              } else {
+                // Move to last cell of previous row
+                const prevRow = currentRow.previousElementSibling;
+                if (prevRow) {
+                  const lastCellIndex = prevRow.cells.length - 2; // Skip the actions cell
+                  nextCell = prevRow.cells[lastCellIndex].querySelector('.editable-cell');
+                }
+              }
+            } else {
+              // Move to next cell
+              if (currentCellIndex < currentRow.cells.length - 2) { // Skip the actions cell
+                nextCell = currentRow.cells[currentCellIndex + 1].querySelector('.editable-cell');
+              } else {
+                // Move to first cell of next row
+                const nextRow = currentRow.nextElementSibling;
+                if (nextRow) {
+                  nextCell = nextRow.cells[0].querySelector('.editable-cell');
+                }
+              }
+            }
+
+            if (nextCell) {
+              nextCell.focus();
+              // Place cursor at the end
+              const range = document.createRange();
+              const sel = window.getSelection();
+              range.selectNodeContents(nextCell);
+              range.collapse(false);
+              sel.removeAllRanges();
+              sel.addRange(range);
+            }
+          }
+        });
+      });
+    }
+
+    // Setup action buttons
+    function setupActionButtons() {
+      // Setup open buttons
+      const openButtons = document.querySelectorAll('.open-button');
+      openButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const index = parseInt(button.dataset.index);
+          window.location.href = `/contact_card?id=${index}`;
+        });
+      });
+
+      // Setup delete buttons
+      const deleteButtons = document.querySelectorAll('.delete-button');
+      deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const index = parseInt(button.dataset.index);
+
+          // Confirm deletion
+          if (confirm(`Are you sure you want to delete ${contacts[index].name}?`)) {
+            // Remove from data array
+            contacts.splice(index, 1);
+
+            // Save to localStorage
+            saveContacts();
+
+            // Regenerate table
+            generateTableRows(contacts);
+
+            // Update status
+            updateLastEdited();
+          }
+        });
+      });
+    }
+
+    // Update last edited timestamp
+    function updateLastEdited() {
+      const now = new Date();
+      const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('last-edited').textContent = formattedTime;
+    }
+
+    // Load contacts from localStorage on page load
+    loadContacts();
+
+    // Generate initial table
+    generateTableRows(contacts);
+
+    // Search functionality
+    const searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      const filteredContacts = contacts.filter(contact =>
+        contact.name.toLowerCase().includes(searchTerm) ||
+        contact.email.toLowerCase().includes(searchTerm) ||
+        contact.phone.includes(searchTerm) ||
+        (contact.firm && contact.firm.toLowerCase().includes(searchTerm)) ||
+        (contact.address && contact.address.toLowerCase().includes(searchTerm))
+      );
+      generateTableRows(filteredContacts);
+    });
+
+    // Modal functionality
+    const modal = document.getElementById('add-contact-modal');
+    const addContactBtn = document.getElementById('add-contact-btn');
+    const closeModalBtn = document.getElementById('close-modal');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const addContactForm = document.getElementById('add-contact-form');
+
+    // Open modal
+    addContactBtn.addEventListener('click', function() {
+      modal.classList.add('active');
+      document.getElementById('contact-name').focus();
+    });
+
+    // Close modal
+    function closeModal() {
+      modal.classList.remove('active');
+      addContactForm.reset();
+    }
+
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        closeModal();
+      }
+    });
+
+    // Handle form submission
+    addContactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const newContact = {
+        name: document.getElementById('contact-name').value.trim(),
+        email: document.getElementById('contact-email').value.trim(),
+        phone: document.getElementById('contact-phone').value.trim(),
+        firm: document.getElementById('contact-firm').value.trim(),
+        address: document.getElementById('contact-address').value.trim()
+      };
+
+      // Add to contacts array
+      contacts.push(newContact);
+
+      // Save to localStorage
+      saveContacts();
+
+      // Regenerate table
+      generateTableRows(contacts);
+
+      // Close modal
+      closeModal();
+
+      // Update last edited
+      updateLastEdited();
+
+      // Show success message
+      alert('Contact added successfully!');
+    });
+
+    // Export functionality
+    document.getElementById('export-btn').addEventListener('click', function() {
+      // Create CSV content
+      const headers = ['Name', 'Email', 'Phone', 'Firm', 'Address'];
+      const csvContent = [
+        headers.join(','),
+        ...contacts.map(contact => [
+          `"${contact.name}"`,
+          `"${contact.email}"`,
+          `"${contact.phone}"`,
+          `"${contact.firm || ''}"`,
+          `"${contact.address || ''}"`
+        ].join(','))
+      ].join('\n');
+
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'contacts.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    });
+
+    // Upload functionality - redirect to upload page
+    document.getElementById('upload-btn').addEventListener('click', function() {
+      window.location.href = '/upload';
+    });
+
+    // Sorting functionality
+    let currentSort = { column: null, direction: 'asc' };
+
+    document.querySelectorAll('th .column-header span').forEach(header => {
+      header.addEventListener('click', function() {
+        const column = this.textContent.toLowerCase();
+
+        // Toggle sort direction if clicking the same column
+        if (currentSort.column === column) {
+          currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+          currentSort.column = column;
+          currentSort.direction = 'asc';
+        }
+
+        // Sort the contacts
+        const sortedContacts = [...contacts].sort((a, b) => {
+          const valueA = (a[column] || '').toLowerCase();
+          const valueB = (b[column] || '').toLowerCase();
+
+          if (currentSort.direction === 'asc') {
+            return valueA.localeCompare(valueB);
+          } else {
+            return valueB.localeCompare(valueA);
+          }
+        });
+
+        // Update sort indicators
+        document.querySelectorAll('.sort-indicator').forEach(indicator => indicator.remove());
+
+        const indicator = document.createElement('span');
+        indicator.className = 'sort-indicator';
+        indicator.textContent = currentSort.direction === 'asc' ? ' ↑' : ' ↓';
+        this.appendChild(indicator);
+
+        // Regenerate table with sorted contacts
+        generateTableRows(sortedContacts);
+      });
+
+      // Add cursor pointer to make it clear it's clickable
+      header.style.cursor = 'pointer';
+    });
+
+    // Filter functionality
+    let activeFilterDropdown = null;
+    let filterValues = {
+      name: [],
+      email: [],
+      phone: [],
+      firm: [],
+      address: []
+    };
+
+    // Handle filter button clicks
+    document.querySelectorAll('.filter-button').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const column = this.dataset.column;
+
+        // Close any open dropdown
+        if (activeFilterDropdown) {
+          activeFilterDropdown.remove();
+          if (activeFilterDropdown.dataset.column === column) {
+            activeFilterDropdown = null;
+            return;
+          }
+        }
+
+        // Create new dropdown
+        const template = document.getElementById('filter-dropdown-template');
+        const dropdown = template.cloneNode(true);
+        dropdown.id = '';
+        dropdown.classList.add('active');
+        dropdown.dataset.column = column;
+
+        // Position the dropdown
+        const rect = this.getBoundingClientRect();
+        dropdown.style.top = `${rect.bottom + window.scrollY}px`;
+        dropdown.style.left = `${rect.left + window.scrollX - 180}px`;
+
+        // Get unique values for this column
+        const uniqueValues = [...new Set(contacts.map(contact => contact[column] || '').filter(val => val))];
+
+        // Populate filter options
+        const optionsContainer = dropdown.querySelector('.filter-options');
+        optionsContainer.innerHTML = ''; // Clear existing options
+
+        uniqueValues.forEach(value => {
+          const option = document.createElement('div');
+          option.className = 'filter-option';
+
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.value = value;
+          checkbox.checked = filterValues[column].includes(value);
+
+          const label = document.createElement('span');
+          label.textContent = value;
+
+          option.appendChild(checkbox);
+          option.appendChild(label);
+
+          // Handle checkbox clicks
+          option.addEventListener('click', function(e) {
+            e.stopPropagation();
+            checkbox.checked = !checkbox.checked;
+          });
+
+          checkbox.addEventListener('click', function(e) {
+            e.stopPropagation();
+          });
+
+          optionsContainer.appendChild(option);
+        });
+
+        // Handle search within filter
+        const searchFilter = dropdown.querySelector('.filter-search');
+        searchFilter.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+          dropdown.querySelectorAll('.filter-option').forEach(option => {
+            const text = option.textContent.toLowerCase();
+            option.style.display = text.includes(searchTerm) ? '' : 'none';
+          });
+        });
+
+        // Handle clear button
+        dropdown.querySelector('.filter-clear').addEventListener('click', function(e) {
+          e.stopPropagation();
+          dropdown.querySelectorAll('.filter-option input').forEach(checkbox => {
+            checkbox.checked = false;
+          });
+        });
+
+        // Handle apply button
+        dropdown.querySelector('.filter-apply').addEventListener('click', function(e) {
+          e.stopPropagation();
+
+          // Get selected values
+          const selectedValues = [];
+          dropdown.querySelectorAll('.filter-option input:checked').forEach(checkbox => {
+            selectedValues.push(checkbox.value);
+          });
+
+          // Update filter values
+          filterValues[column] = selectedValues;
+
+          // Apply filters
+          applyFilters();
+
+          // Close dropdown
+          dropdown.remove();
+          activeFilterDropdown = null;
+        });
+
+        document.body.appendChild(dropdown);
+        activeFilterDropdown = dropdown;
+      });
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      if (activeFilterDropdown && !activeFilterDropdown.contains(e.target)) {
+        activeFilterDropdown.remove();
+        activeFilterDropdown = null;
+      }
+    });
+
+    // Apply all filters
+    function applyFilters() {
+      let filteredContacts = [...contacts];
+
+      // Apply each filter
+      Object.keys(filterValues).forEach(column => {
+        if (filterValues[column].length > 0) {
+          filteredContacts = filteredContacts.filter(contact =>
+            filterValues[column].includes(contact[column] || '')
+          );
+        }
+      });
+
+      // Update table
+      generateTableRows(filteredContacts);
+    }
+  </script>
+</body>
+</html>

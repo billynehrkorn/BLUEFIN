@@ -1,0 +1,760 @@
+<!-- CHANGES MADE: Updated sidebar structure and styling to match seminars.html exactly, including disabled items and proper hover/active states -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bluefin CRM - Contacts</title>
+  <style>
+    :root {
+      --primary: #004080;
+      --sidebar-bg: #f0f0f0;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --accent: #0066cc;
+      --border: #e0e0e0;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --radius: 8px;
+      --header-height: 60px;
+      --sidebar-width: 200px;
+      --spacing: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+      color: var(--text);
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--spacing);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      box-shadow: 0 2px 4px var(--shadow);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo img {
+      height: 32px;
+      width: auto;
+    }
+
+    .view-toggle {
+      display: flex;
+      align-items: center;
+      margin-left: 20px;
+    }
+
+    .view-toggle a {
+      color: white;
+      text-decoration: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      margin-right: 10px;
+      transition: background-color 0.2s;
+    }
+
+    .view-toggle a.active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .view-toggle a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .search-container {
+      position: relative;
+      width: 300px;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: none;
+      outline: none;
+      font-size: 0.9rem;
+      padding-left: 35px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #777;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-account {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: white;
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+
+    .user-account:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .user-account svg {
+      flex-shrink: 0;
+    }
+
+    .user-menu a {
+      color: white;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      transition: background-color 0.2s;
+    }
+
+    .user-menu a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-container {
+      display: flex;
+      margin-top: var(--header-height);
+      min-height: calc(100vh - var(--header-height));
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--sidebar-bg);
+      padding: var(--spacing) 0;
+      flex-shrink: 0;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+    }
+
+    /* Fixed sidebar styling to match seminars.html */
+    .sidebar-menu li {
+      padding: 0;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .sidebar-menu li a,
+    .sidebar-menu li .sidebar-item {
+      display: block;
+      padding: 12px var(--spacing);
+      color: inherit;
+      text-decoration: none;
+      width: 100%;
+      transition: background-color 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-menu li:hover a,
+    .sidebar-menu li:hover .sidebar-item {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .sidebar-menu li.active a,
+    .sidebar-menu li.active .sidebar-item {
+      background-color: rgba(0, 0, 0, 0.1);
+      border-left: 3px solid var(--accent);
+      font-weight: 500;
+    }
+
+    .sidebar-menu li .sidebar-item.disabled {
+      color: #999;
+      cursor: not-allowed;
+    }
+
+    .sidebar-menu li .sidebar-item.disabled:hover {
+      background-color: transparent;
+    }
+
+    .content {
+      flex: 1;
+      padding: var(--spacing);
+      margin-top: 5rem;
+    }
+
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding: 0 var(--spacing);
+    }
+
+    .content-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .toolbar-actions button {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #0055aa;
+    }
+
+    .btn-secondary {
+      background-color: white;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    .btn-secondary:hover {
+      background-color: #f0f8ff;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--spacing);
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px var(--shadow);
+      padding: var(--spacing);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    .card-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--primary);
+    }
+
+    .card-detail {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .card-detail svg {
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    .card-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+
+    .card-action {
+      color: var(--accent);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+
+    .card-action:hover {
+      background-color: rgba(0, 102, 204, 0.1);
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      border-radius: var(--radius);
+      padding: 2rem;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .close-button {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-button:hover {
+      color: var(--primary);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 1.5rem;
+    }
+
+    .form-actions button {
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        padding: 0;
+      }
+      .sidebar-menu {
+        display: flex;
+        overflow-x: auto;
+        padding: 0 var(--spacing);
+      }
+      .sidebar-menu li {
+        flex-shrink: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center;">
+      <div class="logo">
+        <img src="/static/logo.png" alt="Bluefin Logo">
+        Bluefin CRM
+      </div>
+      <div class="view-toggle">
+        <a href="/contacts" class="active">Card View</a>
+        <a href="/spreadsheet">Spreadsheet</a>
+        <a href="/analytics&reports">Analytics & Reports</a>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="search-container">
+        <span class="search-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+        <input type="text" placeholder="Search contacts..." id="search-input">
+      </div>
+      <div class="user-menu">
+        <div class="user-account">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Account</span>
+        </div>
+        <a href="/logout">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <aside class="sidebar">
+      <ul class="sidebar-menu">
+        <li><a href="/" class="sidebar-item">Today</a></li>
+        <li><span class="sidebar-item disabled">Calendar</span></li>
+        <li class="active"><a href="/contacts" class="sidebar-item">Contacts</a></li>
+        <li><span class="sidebar-item disabled">Reports</span></li>
+        <li><a href="/opportunities" class="sidebar-item">Opportunities</a></li>
+        <li><a href="/seminars" class="sidebar-item">Seminars</a></li>
+        <li><span class="sidebar-item disabled">Workflows</span></li>
+        <li><a href="/analytics&reports" class="sidebar-item">Analytics & Reports</a></li>
+      </ul>
+    </aside>
+
+    <main class="content">
+      <div class="content-header">
+        <div class="content-title">All Contacts</div>
+        <div class="toolbar-actions">
+          <button class="btn-secondary" id="export-btn">Export</button>
+          <button class="btn-secondary" id="upload-btn">Upload Contacts</button>
+          <button class="btn-primary" id="add-contact-btn">+ Add Contact</button>
+        </div>
+      </div>
+
+      <div class="cards-grid" id="contacts-grid">
+        {% for contact in contacts %}
+        <div class="card">
+          <div class="card-name">{{ contact['name'] }}</div>
+          <div class="card-detail">{{ contact['email'] }}</div>
+          <div class="card-detail">{{ contact['phone'] }}</div>
+          {% if contact['firm'] %}<div class="card-detail">{{ contact['firm'] }}</div>{% endif %}
+          {% if contact['address'] %}<div class="card-detail">{{ contact['address'] }}</div>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </main>
+  </div>
+
+  <!-- Add Contact Modal -->
+  <div id="add-contact-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Add New Contact</h2>
+        <button class="close-button" id="close-modal">&times;</button>
+      </div>
+      <form id="add-contact-form" method="POST" action="/add_contact">
+        <div class="form-group">
+          <label class="form-label" for="contact-name">Name *</label>
+          <input type="text" id="contact-name" name="name" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact-email">Email *</label>
+          <input type="email" id="contact-email" name="email" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact-phone">Phone *</label>
+          <input type="tel" id="contact-phone" name="phone" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact-firm">Firm</label>
+          <input type="text" id="contact-firm" name="firm" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact-address">Address</label>
+          <input type="text" id="contact-address" name="address" class="form-input">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="cancel-btn">Cancel</button>
+          <button type="submit" class="btn-primary">Add Contact</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Sample contact data with firm and address
+    const contacts = [
+      { name: "John Smith", email: "john.smith@example.com", phone: "(555) 123-4567", firm: "Morgan Stanley", address: "123 Main St, New York, NY 10001" },
+      { name: "Sarah Johnson", email: "sarah.j@example.com", phone: "(555) 234-5678", firm: "Goldman Sachs", address: "456 Park Ave, Boston, MA 02108" },
+      { name: "Michael Brown", email: "m.brown@example.com", phone: "(555) 345-6789", firm: "JPMorgan Chase", address: "789 Oak Dr, Chicago, IL 60601" },
+      { name: "Emily Davis", email: "emily.davis@example.com", phone: "(555) 456-7890", firm: "Bank of America", address: "101 Pine St, San Francisco, CA 94101" },
+      { name: "Robert Wilson", email: "rwilson@example.com", phone: "(555) 567-8901", firm: "Wells Fargo", address: "202 Maple Rd, Seattle, WA 98101" },
+      { name: "Jennifer Lee", email: "jennifer.lee@example.com", phone: "(555) 678-9012", firm: "Citigroup", address: "303 Cedar Ln, Austin, TX 78701" },
+      { name: "David Martinez", email: "d.martinez@example.com", phone: "(555) 789-0123", firm: "UBS", address: "404 Birch Blvd, Denver, CO 80201" },
+      { name: "Lisa Anderson", email: "lisa.a@example.com", phone: "(555) 890-1234", firm: "Merrill Lynch", address: "505 Elm St, Portland, OR 97201" },
+      { name: "James Taylor", email: "james.t@example.com", phone: "(555) 901-2345", firm: "Charles Schwab", address: "606 Spruce Ave, Miami, FL 33101" },
+      { name: "Patricia Moore", email: "p.moore@example.com", phone: "(555) 012-3456", firm: "Fidelity", address: "707 Willow Way, Atlanta, GA 30301" },
+      { name: "Thomas Jackson", email: "t.jackson@example.com", phone: "(555) 123-4567", firm: "Edward Jones", address: "808 Aspen Ct, Dallas, TX 75201" },
+      { name: "Jessica White", email: "j.white@example.com", phone: "(555) 234-5678", firm: "Raymond James", address: "909 Redwood Rd, Phoenix, AZ 85001" }
+    ];
+
+    // Function to save contacts to localStorage
+    function saveContacts() {
+      localStorage.setItem('crmContacts', JSON.stringify(contacts));
+    }
+
+    // Function to load contacts from localStorage
+    function loadContacts() {
+      const savedContacts = localStorage.getItem('crmContacts');
+      if (savedContacts) {
+        contacts.length = 0; // Clear existing array
+        contacts.push(...JSON.parse(savedContacts)); // Add saved contacts
+      }
+    }
+
+    // Function to generate contact cards
+    function generateContactCards(contactsArray) {
+      const contactsGrid = document.getElementById('contacts-grid');
+      contactsGrid.innerHTML = '';
+
+      contactsArray.forEach((contact, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => window.location.href = `/contact_card?id=${index}`;
+        card.innerHTML = `
+          <div class="card-name">${contact.name}</div>
+          <div class="card-detail">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 2L11 13"></path>
+              <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+            </svg>
+            ${contact.email}
+          </div>
+          <div class="card-detail">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            ${contact.phone}
+          </div>
+          ${contact.firm ? `
+          <div class="card-detail">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 21h18"></path>
+              <path d="M5 21V7l8-4v18"></path>
+              <path d="M19 21V11l-6-4"></path>
+            </svg>
+            ${contact.firm}
+          </div>
+          ` : ''}
+          ${contact.address ? `
+          <div class="card-detail">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            ${contact.address}
+          </div>
+          ` : ''}
+          <div class="card-actions" onclick="event.stopPropagation()">
+            <button class="card-action">Edit</button>
+            <button class="card-action">Call</button>
+            <button class="card-action">Email</button>
+          </div>
+        `;
+        contactsGrid.appendChild(card);
+      });
+    }
+
+    // Load contacts from localStorage on page load
+    loadContacts();
+
+    // Generate initial cards
+    generateContactCards(contacts);
+
+    // Search functionality
+    const searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      const filteredContacts = contacts.filter(contact =>
+        contact.name.toLowerCase().includes(searchTerm) ||
+        contact.email.toLowerCase().includes(searchTerm) ||
+        contact.phone.includes(searchTerm) ||
+        (contact.firm && contact.firm.toLowerCase().includes(searchTerm)) ||
+        (contact.address && contact.address.toLowerCase().includes(searchTerm))
+      );
+      generateContactCards(filteredContacts);
+    });
+
+    // Modal functionality
+    const modal = document.getElementById('add-contact-modal');
+    const addContactBtn = document.getElementById('add-contact-btn');
+    const closeModalBtn = document.getElementById('close-modal');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const addContactForm = document.getElementById('add-contact-form');
+
+    // Open modal
+    addContactBtn.addEventListener('click', function() {
+      modal.classList.add('active');
+      document.getElementById('contact-name').focus();
+    });
+
+    // Close modal
+    function closeModal() {
+      modal.classList.remove('active');
+      addContactForm.reset();
+    }
+
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        closeModal();
+      }
+    });
+
+    // Handle form submission
+    addContactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const newContact = {
+        name: document.getElementById('contact-name').value.trim(),
+        email: document.getElementById('contact-email').value.trim(),
+        phone: document.getElementById('contact-phone').value.trim(),
+        firm: document.getElementById('contact-firm').value.trim(),
+        address: document.getElementById('contact-address').value.trim()
+      };
+
+      // Add to contacts array
+      contacts.push(newContact);
+
+      // Save to localStorage
+      saveContacts();
+
+      // Regenerate cards
+      generateContactCards(contacts);
+
+      // Close modal
+      closeModal();
+
+      // Show success message
+      alert('Contact added successfully!');
+    });
+
+    // Export functionality
+    document.getElementById('export-btn').addEventListener('click', function() {
+      // Create CSV content
+      const headers = ['Name', 'Email', 'Phone', 'Firm', 'Address'];
+      const csvContent = [
+        headers.join(','),
+        ...contacts.map(contact => [
+          `"${contact.name}"`,
+          `"${contact.email}"`,
+          `"${contact.phone}"`,
+          `"${contact.firm || ''}"`,
+          `"${contact.address || ''}"`
+        ].join(','))
+      ].join('\n');
+
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'contacts.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    });
+
+    // Upload functionality - redirect to upload page
+    document.getElementById('upload-btn').addEventListener('click', function() {
+      window.location.href = '/upload';
+    });
+  </script>
+</body>
+</html>

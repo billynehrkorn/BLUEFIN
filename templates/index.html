@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bluefin CRM - Home</title>
+  <style>
+    :root {
+      --primary: #004080;
+      --sidebar-bg: #f0f0f0;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --accent: #0066cc;
+      --border: #e0e0e0;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --radius: 8px;
+      --header-height: 60px;
+      --spacing: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+      color: var(--text);
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--spacing);
+      box-shadow: 0 2px 4px var(--shadow);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo img {
+      height: 32px;
+      width: auto;
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #0055aa;
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: white;
+      border: 1px solid white;
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .hero-section {
+      text-align: center;
+      max-width: 800px;
+      background: white;
+      border-radius: 12px;
+      padding: 4rem 3rem;
+      box-shadow: 0 10px 30px var(--shadow);
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: #666;
+      margin-bottom: 2rem;
+      line-height: 1.5;
+    }
+
+    .hero-description {
+      font-size: 1rem;
+      color: #777;
+      margin-bottom: 3rem;
+      line-height: 1.6;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-large {
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .feature {
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-description {
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .demo-link {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .demo-text {
+      color: #666;
+      margin-bottom: 1rem;
+    }
+
+    .demo-button {
+      background-color: #f8f9fa;
+      color: var(--accent);
+      border: 1px solid var(--border);
+    }
+
+    .demo-button:hover {
+      background-color: #e9ecef;
+    }
+
+    @media (max-width: 768px) {
+      .hero-section {
+        padding: 2rem 1.5rem;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1.1rem;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .features {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .user-account {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: white;
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+      margin-right: 12px;
+    }
+
+    .user-account:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .user-account svg {
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="/static/logo.png" alt="Bluefin Logo">
+      Bluefin CRM
+    </div>
+    <div class="auth-buttons">
+      {% if session.user %}
+        <div class="user-account">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>{{ session.user_name or 'Account' }}</span>
+        </div>
+        <a href="/logout" class="btn btn-secondary">Logout</a>
+      {% else %}
+        <a href="/login" class="btn btn-secondary">Login</a>
+        <a href="/signup" class="btn btn-primary">Register</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="hero-section">
+      <h1 class="hero-title">Welcome to Bluefin CRM</h1>
+      <p class="hero-subtitle">Streamline your customer relationships with powerful contact management</p>
+      <p class="hero-description">
+        Bluefin CRM helps you organize, track, and nurture your business relationships.
+        Manage contacts, track interactions, and grow your business with our intuitive platform.
+      </p>
+
+      <div class="cta-buttons">
+        <a href="/signup" class="btn btn-primary btn-large">Get Started</a>
+        <a href="#features" class="btn btn-secondary btn-large">Learn More</a>
+      </div>
+
+      <div class="features" id="features">
+        <div class="feature">
+          <div class="feature-icon">👥</div>
+          <h3 class="feature-title">Contact Management</h3>
+          <p class="feature-description">Organize and manage all your contacts in one centralized location</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">📊</div>
+          <h3 class="feature-title">Analytics & Reports</h3>
+          <p class="feature-description">Get insights into your relationships and track your business growth</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🔄</div>
+          <h3 class="feature-title">Workflow Automation</h3>
+          <p class="feature-description">Automate repetitive tasks and focus on what matters most</p>
+        </div>
+      </div>
+
+      <div class="demo-link">
+        <p class="demo-text">Want to see it in action?</p>
+        <a href="/contacts" class="btn demo-button btn-large">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="10,8 16,12 10,16 10,8"></polygon>
+          </svg>
+          View Demo
+        </a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

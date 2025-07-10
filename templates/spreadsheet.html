@@ -171,24 +171,38 @@
       flex-shrink: 0;
     }
 
-    .sidebar-menu {
-      list-style: none;
-    }
-
-    .sidebar-menu li {
+    .sidebar-menu li a,
+    .sidebar-menu li .sidebar-item {
+      display: block;
       padding: 12px var(--spacing);
-      cursor: pointer;
+      color: inherit;
+      text-decoration: none;
+      width: 100%;
       transition: background-color 0.2s;
+      border-left: 3px solid transparent;
     }
 
-    .sidebar-menu li:hover {
+    .sidebar-menu li:hover a,
+    .sidebar-menu li:hover .sidebar-item {
       background-color: rgba(0, 0, 0, 0.05);
     }
 
-    .sidebar-menu li.active {
+    .sidebar-menu li.active a,
+    .sidebar-menu li.active .sidebar-item {
       background-color: rgba(0, 0, 0, 0.1);
       border-left: 3px solid var(--accent);
+      font-weight: 500;
     }
+
+    .sidebar-menu li .sidebar-item.disabled {
+      color: #999;
+      cursor: not-allowed;
+    }
+
+    .sidebar-menu li .sidebar-item.disabled:hover {
+      background-color: transparent;
+    }
+
 
     .content {
       flex: 1;
@@ -579,7 +593,7 @@
     <aside class="sidebar">
       <ul class="sidebar-menu">
         <li><a href="/" class="sidebar-link{% if request.path == '/' %} active{% endif %}">Today</a></li>
-        <li><a href="#" class="sidebar-link">Calendar</a></li>
+        <li><a href="/calendar" class="sidebar-item">Calendar</a></li>
         <li><a href="/contacts" class="sidebar-link{% if request.path == '/contacts' %} active{% endif %}">Contacts</a></li>
         <li><a href="#" class="sidebar-link">Reports</a></li>
         <li><a href="/opportunities" class="sidebar-link{% if request.path == '/opportunities' %} active{% endif %}">Opportunities</a></li>

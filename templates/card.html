@@ -1,4 +1,12 @@
-<!-- CHANGES MADE: Updated sidebar structure and styling to match seminars.html exactly, including disabled items and proper hover/active states -->
+<!-- CHANGES MADE:
+- Converted from card grid to stacked list layout with profile photos and names only
+- Added advanced search filters (Firm dropdown, # of Accounts, Date range)
+- Reduced font sizes and margins for more compact display
+- Made each list item clickable to navigate to contact detail
+- Removed "Reports" and "Workflows" from sidebar
+- Added filter form that submits to /contacts with query parameters
+- Responsive design maintained for mobile devices
+-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -173,7 +181,6 @@
       list-style: none;
     }
 
-    /* Fixed sidebar styling to match seminars.html */
     .sidebar-menu li {
       padding: 0;
       cursor: pointer;
@@ -215,19 +222,18 @@
     .content {
       flex: 1;
       padding: var(--spacing);
-      margin-top: 5rem;
     }
 
     .content-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
       padding: 0 var(--spacing);
     }
 
     .content-title {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: 600;
       color: var(--primary);
     }
@@ -238,9 +244,9 @@
     }
 
     .toolbar-actions button {
-      padding: 8px 16px;
+      padding: 6px 12px;
       border-radius: 6px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       cursor: pointer;
       transition: all 0.2s;
       border: none;
@@ -265,65 +271,141 @@
       background-color: #f0f8ff;
     }
 
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: var(--spacing);
-    }
-
-    .card {
-      background-color: var(--card-bg);
+    /* Filter Bar Styles */
+    .filter-bar {
+      background: white;
       border-radius: var(--radius);
-      box-shadow: 0 2px 8px var(--shadow);
-      padding: var(--spacing);
-      transition: transform 0.2s, box-shadow 0.2s;
-      cursor: pointer;
+      padding: 1rem;
+      margin: 0 var(--spacing) 1rem var(--spacing);
+      box-shadow: 0 2px 4px var(--shadow);
+      border: 1px solid var(--border);
     }
 
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 4px 12px var(--shadow);
+    .filter-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr auto;
+      gap: 1rem;
+      align-items: end;
     }
 
-    .card-name {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--primary);
-    }
-
-    .card-detail {
+    .filter-group {
       display: flex;
-      align-items: center;
-      margin-bottom: 6px;
-      color: #666;
-      font-size: 0.9rem;
+      flex-direction: column;
     }
 
-    .card-detail svg {
-      margin-right: 8px;
-      flex-shrink: 0;
+    .filter-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 0.25rem;
     }
 
-    .card-actions {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 12px;
-    }
-
-    .card-action {
-      color: var(--accent);
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 0.85rem;
-      padding: 4px 8px;
+    .filter-input, .filter-select {
+      padding: 0.5rem;
+      border: 1px solid var(--border);
       border-radius: 4px;
+      font-size: 0.85rem;
+      transition: border-color 0.2s;
+    }
+
+    .filter-input:focus, .filter-select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .filter-button {
+      padding: 0.5rem 1rem;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      cursor: pointer;
       transition: background-color 0.2s;
     }
 
-    .card-action:hover {
-      background-color: rgba(0, 102, 204, 0.1);
+    .filter-button:hover {
+      background-color: #0055aa;
+    }
+
+    /* Contact List Styles */
+    .contacts-list {
+      background: white;
+      border-radius: var(--radius);
+      margin: 0 var(--spacing);
+      box-shadow: 0 2px 4px var(--shadow);
+      overflow: hidden;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background-color 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .contact-item:hover {
+      background-color: #f8f9fa;
+    }
+
+    .contact-item:last-child {
+      border-bottom: none;
+    }
+
+    .contact-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-right: 1rem;
+      flex-shrink: 0;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .contact-avatar.has-image {
+      color: transparent;
+    }
+
+    .contact-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .contact-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 0.1rem;
+    }
+
+    .contact-details {
+      font-size: 0.8rem;
+      color: #666;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .contact-detail {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .contact-detail svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
     }
 
     /* Modal Styles */
@@ -426,6 +508,17 @@
       border: none;
     }
 
+    .empty-state {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 3rem;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px var(--shadow);
+      margin: 0 var(--spacing);
+    }
+
     /* Responsive design */
     @media (max-width: 768px) {
       .main-container {
@@ -443,6 +536,14 @@
       .sidebar-menu li {
         flex-shrink: 0;
       }
+      .filter-form {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+      .contact-details {
+        flex-direction: column;
+        gap: 0.25rem;
+      }
     }
   </style>
 </head>
@@ -456,7 +557,6 @@
       <div class="view-toggle">
         <a href="/contacts" class="active">Card View</a>
         <a href="/spreadsheet">Spreadsheet</a>
-        <a href="/analytics&reports">Analytics & Reports</a>
       </div>
     </div>
     <div class="header-right">
@@ -486,13 +586,11 @@
     <aside class="sidebar">
       <ul class="sidebar-menu">
         <li><a href="/" class="sidebar-item">Today</a></li>
-        <li><span class="sidebar-item disabled">Calendar</span></li>
+        <li><a href="/calendar" class="sidebar-item">Calendar</a></li>
         <li class="active"><a href="/contacts" class="sidebar-item">Contacts</a></li>
-        <li><span class="sidebar-item disabled">Reports</span></li>
         <li><a href="/opportunities" class="sidebar-item">Opportunities</a></li>
-        <li><a href="/seminars" class="sidebar-item">Seminars</a></li>
-        <li><span class="sidebar-item disabled">Workflows</span></li>
         <li><a href="/analytics&reports" class="sidebar-item">Analytics & Reports</a></li>
+        <li><a href="/seminars" class="sidebar-item">Seminars</a></li>
       </ul>
     </aside>
 
@@ -506,17 +604,113 @@
         </div>
       </div>
 
-      <div class="cards-grid" id="contacts-grid">
-        {% for contact in contacts %}
-        <div class="card">
-          <div class="card-name">{{ contact['name'] }}</div>
-          <div class="card-detail">{{ contact['email'] }}</div>
-          <div class="card-detail">{{ contact['phone'] }}</div>
-          {% if contact['firm'] %}<div class="card-detail">{{ contact['firm'] }}</div>{% endif %}
-          {% if contact['address'] %}<div class="card-detail">{{ contact['address'] }}</div>{% endif %}
-        </div>
-        {% endfor %}
+      <!-- Advanced Search Filters -->
+      <div class="filter-bar">
+        <form class="filter-form" method="GET" action="/contacts">
+          <div class="filter-group">
+            <label class="filter-label" for="firm-filter">Firm</label>
+            <select id="firm-filter" name="firm" class="filter-select">
+              <option value="">All Firms</option>
+              {% for firm in firms %}
+                <option value="{{ firm }}" {% if request.args.get('firm') == firm %}selected{% endif %}>{{ firm }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label" for="accounts-filter"># of Accounts</label>
+            <select id="accounts-filter" name="accounts" class="filter-select">
+              <option value="">Any</option>
+              <option value="0" {% if request.args.get('accounts') == '0' %}selected{% endif %}>0</option>
+              <option value="1-5" {% if request.args.get('accounts') == '1-5' %}selected{% endif %}>1-5</option>
+              <option value="6-10" {% if request.args.get('accounts') == '6-10' %}selected{% endif %}>6-10</option>
+              <option value="10+" {% if request.args.get('accounts') == '10+' %}selected{% endif %}>10+</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label" for="start-date">Created From</label>
+            <input type="date" id="start-date" name="start_date" class="filter-input" value="{{ request.args.get('start_date', '') }}">
+          </div>
+          <div class="filter-group">
+            <label class="filter-label" for="end-date">Created To</label>
+            <input type="date" id="end-date" name="end_date" class="filter-input" value="{{ request.args.get('end_date', '') }}">
+          </div>
+          <div class="filter-group">
+            <button type="submit" class="filter-button">Filter</button>
+          </div>
+        </form>
       </div>
+
+      <!-- Contacts List -->
+      {% if contacts %}
+        <div class="contacts-list">
+          {% for contact in contacts %}
+            <a href="/contact_card?id={{ contact.id }}" class="contact-item">
+              <div class="contact-avatar {% if contact.profile_picture %}has-image{% endif %}"
+                   {% if contact.profile_picture %}style="background-image: url('{{ contact.profile_picture }}');"{% endif %}>
+                {% if not contact.profile_picture %}
+                  {% if contact.name %}
+                    {% set name_parts = contact.name.split() %}
+                    {% if name_parts|length >= 2 %}
+                      {{ name_parts[0][0].upper() + name_parts[-1][0].upper() }}
+                    {% else %}
+                      {{ name_parts[0][:2].upper() }}
+                    {% endif %}
+                  {% else %}
+                    NA
+                  {% endif %}
+                {% endif %}
+              </div>
+              <div class="contact-info">
+                <div class="contact-name">{{ contact.name }}</div>
+                <div class="contact-details">
+                  {% if contact.firm %}
+                    <div class="contact-detail">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 21h18"></path>
+                        <path d="M5 21V7l8-4v18"></path>
+                        <path d="M19 21V11l-6-4"></path>
+                      </svg>
+                      {{ contact.firm }}
+                    </div>
+                  {% endif %}
+                  {% if contact.email %}
+                    <div class="contact-detail">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                      </svg>
+                      {{ contact.email }}
+                    </div>
+                  {% endif %}
+                  {% if contact.phone %}
+                    <div class="contact-detail">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                      </svg>
+                      {{ contact.phone }}
+                    </div>
+                  {% endif %}
+                  {% if contact.account_count is defined %}
+                    <div class="contact-detail">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                      </svg>
+                      {{ contact.account_count }} account{{ 's' if contact.account_count != 1 else '' }}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <h3>No contacts found</h3>
+          <p>{% if request.args %}Try adjusting your filters or{% endif %} click "Add Contact" to create your first contact.</p>
+        </div>
+      {% endif %}
     </main>
   </div>
 
@@ -533,12 +727,12 @@
           <input type="text" id="contact-name" name="name" class="form-input" required>
         </div>
         <div class="form-group">
-          <label class="form-label" for="contact-email">Email *</label>
-          <input type="email" id="contact-email" name="email" class="form-input" required>
+          <label class="form-label" for="contact-email">Email</label>
+          <input type="email" id="contact-email" name="email" class="form-input">
         </div>
         <div class="form-group">
-          <label class="form-label" for="contact-phone">Phone *</label>
-          <input type="tel" id="contact-phone" name="phone" class="form-input" required>
+          <label class="form-label" for="contact-phone">Phone</label>
+          <input type="tel" id="contact-phone" name="phone" class="form-input">
         </div>
         <div class="form-group">
           <label class="form-label" for="contact-firm">Firm</label>
@@ -547,6 +741,14 @@
         <div class="form-group">
           <label class="form-label" for="contact-address">Address</label>
           <input type="text" id="contact-address" name="address" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact-title">Title</label>
+          <input type="text" id="contact-title" name="title" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact-crd-number">CRD Number</label>
+          <input type="text" id="contact-crd-number" name="crd_number" class="form-input">
         </div>
         <div class="form-actions">
           <button type="button" class="btn-secondary" id="cancel-btn">Cancel</button>
@@ -557,107 +759,21 @@
   </div>
 
   <script>
-    // Sample contact data with firm and address
-    const contacts = [
-      { name: "John Smith", email: "john.smith@example.com", phone: "(555) 123-4567", firm: "Morgan Stanley", address: "123 Main St, New York, NY 10001" },
-      { name: "Sarah Johnson", email: "sarah.j@example.com", phone: "(555) 234-5678", firm: "Goldman Sachs", address: "456 Park Ave, Boston, MA 02108" },
-      { name: "Michael Brown", email: "m.brown@example.com", phone: "(555) 345-6789", firm: "JPMorgan Chase", address: "789 Oak Dr, Chicago, IL 60601" },
-      { name: "Emily Davis", email: "emily.davis@example.com", phone: "(555) 456-7890", firm: "Bank of America", address: "101 Pine St, San Francisco, CA 94101" },
-      { name: "Robert Wilson", email: "rwilson@example.com", phone: "(555) 567-8901", firm: "Wells Fargo", address: "202 Maple Rd, Seattle, WA 98101" },
-      { name: "Jennifer Lee", email: "jennifer.lee@example.com", phone: "(555) 678-9012", firm: "Citigroup", address: "303 Cedar Ln, Austin, TX 78701" },
-      { name: "David Martinez", email: "d.martinez@example.com", phone: "(555) 789-0123", firm: "UBS", address: "404 Birch Blvd, Denver, CO 80201" },
-      { name: "Lisa Anderson", email: "lisa.a@example.com", phone: "(555) 890-1234", firm: "Merrill Lynch", address: "505 Elm St, Portland, OR 97201" },
-      { name: "James Taylor", email: "james.t@example.com", phone: "(555) 901-2345", firm: "Charles Schwab", address: "606 Spruce Ave, Miami, FL 33101" },
-      { name: "Patricia Moore", email: "p.moore@example.com", phone: "(555) 012-3456", firm: "Fidelity", address: "707 Willow Way, Atlanta, GA 30301" },
-      { name: "Thomas Jackson", email: "t.jackson@example.com", phone: "(555) 123-4567", firm: "Edward Jones", address: "808 Aspen Ct, Dallas, TX 75201" },
-      { name: "Jessica White", email: "j.white@example.com", phone: "(555) 234-5678", firm: "Raymond James", address: "909 Redwood Rd, Phoenix, AZ 85001" }
-    ];
-
-    // Function to save contacts to localStorage
-    function saveContacts() {
-      localStorage.setItem('crmContacts', JSON.stringify(contacts));
-    }
-
-    // Function to load contacts from localStorage
-    function loadContacts() {
-      const savedContacts = localStorage.getItem('crmContacts');
-      if (savedContacts) {
-        contacts.length = 0; // Clear existing array
-        contacts.push(...JSON.parse(savedContacts)); // Add saved contacts
-      }
-    }
-
-    // Function to generate contact cards
-    function generateContactCards(contactsArray) {
-      const contactsGrid = document.getElementById('contacts-grid');
-      contactsGrid.innerHTML = '';
-
-      contactsArray.forEach((contact, index) => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.onclick = () => window.location.href = `/contact_card?id=${index}`;
-        card.innerHTML = `
-          <div class="card-name">${contact.name}</div>
-          <div class="card-detail">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 2L11 13"></path>
-              <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
-            </svg>
-            ${contact.email}
-          </div>
-          <div class="card-detail">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-            </svg>
-            ${contact.phone}
-          </div>
-          ${contact.firm ? `
-          <div class="card-detail">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 21h18"></path>
-              <path d="M5 21V7l8-4v18"></path>
-              <path d="M19 21V11l-6-4"></path>
-            </svg>
-            ${contact.firm}
-          </div>
-          ` : ''}
-          ${contact.address ? `
-          <div class="card-detail">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
-            ${contact.address}
-          </div>
-          ` : ''}
-          <div class="card-actions" onclick="event.stopPropagation()">
-            <button class="card-action">Edit</button>
-            <button class="card-action">Call</button>
-            <button class="card-action">Email</button>
-          </div>
-        `;
-        contactsGrid.appendChild(card);
-      });
-    }
-
-    // Load contacts from localStorage on page load
-    loadContacts();
-
-    // Generate initial cards
-    generateContactCards(contacts);
-
     // Search functionality
     const searchInput = document.getElementById('search-input');
+    const allContactItems = document.querySelectorAll('.contact-item');
+
     searchInput.addEventListener('input', function() {
       const searchTerm = this.value.toLowerCase();
-      const filteredContacts = contacts.filter(contact =>
-        contact.name.toLowerCase().includes(searchTerm) ||
-        contact.email.toLowerCase().includes(searchTerm) ||
-        contact.phone.includes(searchTerm) ||
-        (contact.firm && contact.firm.toLowerCase().includes(searchTerm)) ||
-        (contact.address && contact.address.toLowerCase().includes(searchTerm))
-      );
-      generateContactCards(filteredContacts);
+
+      allContactItems.forEach(item => {
+        const itemText = item.textContent.toLowerCase();
+        if (itemText.includes(searchTerm)) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
     });
 
     // Modal functionality
@@ -696,50 +812,34 @@
       }
     });
 
-    // Handle form submission
-    addContactForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      const newContact = {
-        name: document.getElementById('contact-name').value.trim(),
-        email: document.getElementById('contact-email').value.trim(),
-        phone: document.getElementById('contact-phone').value.trim(),
-        firm: document.getElementById('contact-firm').value.trim(),
-        address: document.getElementById('contact-address').value.trim()
-      };
-
-      // Add to contacts array
-      contacts.push(newContact);
-
-      // Save to localStorage
-      saveContacts();
-
-      // Regenerate cards
-      generateContactCards(contacts);
-
-      // Close modal
-      closeModal();
-
-      // Show success message
-      alert('Contact added successfully!');
-    });
-
     // Export functionality
     document.getElementById('export-btn').addEventListener('click', function() {
-      // Create CSV content
-      const headers = ['Name', 'Email', 'Phone', 'Firm', 'Address'];
+      const contacts = [];
+      allContactItems.forEach(item => {
+        const name = item.querySelector('.contact-name')?.textContent || '';
+        const details = Array.from(item.querySelectorAll('.contact-detail')).map(detail => detail.textContent.trim());
+
+        const contact = { name };
+        details.forEach(detail => {
+          if (detail.includes('@')) contact.email = detail;
+          else if (detail.match(/\d{3}/)) contact.phone = detail;
+          else if (!contact.firm && !detail.includes('account')) contact.firm = detail;
+        });
+
+        contacts.push(contact);
+      });
+
+      const headers = ['Name', 'Email', 'Phone', 'Firm'];
       const csvContent = [
         headers.join(','),
         ...contacts.map(contact => [
-          `"${contact.name}"`,
-          `"${contact.email}"`,
-          `"${contact.phone}"`,
-          `"${contact.firm || ''}"`,
-          `"${contact.address || ''}"`
+          `"${contact.name || ''}"`,
+          `"${contact.email || ''}"`,
+          `"${contact.phone || ''}"`,
+          `"${contact.firm || ''}"`
         ].join(','))
       ].join('\n');
 
-      // Create and download file
       const blob = new Blob([csvContent], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -751,7 +851,7 @@
       window.URL.revokeObjectURL(url);
     });
 
-    // Upload functionality - redirect to upload page
+    // Upload functionality
     document.getElementById('upload-btn').addEventListener('click', function() {
       window.location.href = '/upload';
     });

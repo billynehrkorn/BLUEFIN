@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluefin CRM - Calendar</title>
+    <style>
+        :root {
+            --primary: #004080;
+            --sidebar-bg: #f0f0f0;
+            --card-bg: #ffffff;
+            --text: #333333;
+            --accent: #0066cc;
+            --border: #e0e0e0;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --radius: 8px;
+            --header-height: 60px;
+            --sidebar-width: 200px;
+            --spacing: 16px;
+            --calendar-cell-height: 120px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            color: var(--text);
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--spacing);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo img {
+            height: 32px;
+            width: auto;
+        }
+
+        .view-toggle {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+
+        .view-toggle a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-right: 10px;
+            transition: background-color 0.2s;
+        }
+
+        .view-toggle a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .view-toggle a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-account {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: white;
+            font-size: 0.9rem;
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .user-account:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .user-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .main-container {
+            display: flex;
+            margin-top: var(--header-height);
+            min-height: calc(100vh - var(--header-height));
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            padding: var(--spacing) 0;
+            flex-shrink: 0;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            padding: 0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar-menu li a,
+        .sidebar-menu li .sidebar-item {
+            display: block;
+            padding: 12px var(--spacing);
+            color: inherit;
+            text-decoration: none;
+            width: 100%;
+            transition: background-color 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-menu li:hover a,
+        .sidebar-menu li:hover .sidebar-item {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-menu li.active a,
+        .sidebar-menu li.active .sidebar-item {
+            background-color: rgba(0, 0, 0, 0.1);
+            border-left: 3px solid var(--accent);
+            font-weight: 500;
+        }
+
+        .content {
+            flex: 1;
+            padding: var(--spacing);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 0 var(--spacing);
+        }
+
+        .calendar-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .month-navigation {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background-color 0.2s;
+            text-decoration: none;
+        }
+
+        .nav-button:hover {
+            background-color: #0055aa;
+        }
+
+        .month-year {
+            font-size: 1.5rem;
+            font-weight: 600;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .calendar-grid {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 8px var(--shadow);
+            overflow: hidden;
+            margin: 0 var(--spacing);
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .weekday {
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .calendar-day {
+            min-height: var(--calendar-cell-height);
+            border: 1px solid var(--border);
+            position: relative;
+            background: white;
+            transition: background-color 0.2s;
+        }
+
+        .calendar-day:hover {
+            background-color: #f8f9fa;
+        }
+
+        .calendar-day.other-month {
+            background-color: #f5f5f5;
+            color: #999;
+        }
+
+        .calendar-day.today {
+            background-color: #e3f2fd;
+            border-color: var(--accent);
+        }
+
+        .day-number {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            z-index: 2;
+        }
+
+        .add-note-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+            z-index: 2;
+        }
+
+        .add-note-btn:hover {
+            background-color: #0055aa;
+        }
+
+        .day-content {
+            padding: 30px 8px 8px 8px;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .calendar-item {
+            background: #f0f8ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 4px;
+            padding: 4px 6px;
+            margin-bottom: 4px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        .calendar-note {
+            background: #fff3cd;
+            border-color: #ffeaa7;
+        }
+
+        .calendar-reminder {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .calendar-reminder:hover {
+            background-color: #b8daff;
+        }
+
+        .item-text {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            color: #dc3545;
+            padding: 0;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2px;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .delete-btn:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-button:hover {
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0055aa;
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        .btn-secondary:hover {
+            background-color: #f0f8ff;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                padding: 0;
+            }
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 var(--spacing);
+            }
+            .sidebar-menu li {
+                flex-shrink: 0;
+            }
+            .calendar-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .calendar-title {
+                font-size: 1.5rem;
+            }
+            .month-year {
+                font-size: 1.2rem;
+            }
+            .calendar-day {
+                min-height: 80px;
+            }
+            .day-content {
+                padding: 25px 4px 4px 4px;
+            }
+            .calendar-item {
+                font-size: 0.7rem;
+                padding: 2px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="display: flex; align-items: center;">
+            <div class="logo">
+                <img src="/static/logo.png" alt="Bluefin Logo">
+                Bluefin CRM
+            </div>
+
+        </div>
+        <div class="header-right">
+            <div class="user-menu">
+                <div class="user-account">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span>Account</span>
+                </div>
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="/" class="sidebar-item">Today</a></li>
+                <li class="active"><a href="/calendar" class="sidebar-item">Calendar</a></li>
+                <li><a href="/contacts" class="sidebar-item">Contacts</a></li>
+                <li><a href="/opportunities" class="sidebar-item">Opportunities</a></li>
+                <li><a href="/seminars" class="sidebar-item">Seminars</a></li>
+                <li><a href="/analytics&reports" class="sidebar-item">Analytics & Reports</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="calendar-header">
+                <div class="calendar-title">Calendar</div>
+                <div class="month-navigation">
+                    <a href="/calendar?year={{ prev_year }}&month={{ prev_month }}" class="nav-button">‹</a>
+                    <div class="month-year">{{ month_name }} {{ year }}</div>
+                    <a href="/calendar?year={{ next_year }}&month={{ next_month }}" class="nav-button">›</a>
+                </div>
+            </div>
+
+            <div class="calendar-grid">
+                <div class="calendar-weekdays">
+                    <div class="weekday">Sun</div>
+                    <div class="weekday">Mon</div>
+                    <div class="weekday">Tue</div>
+                    <div class="weekday">Wed</div>
+                    <div class="weekday">Thu</div>
+                    <div class="weekday">Fri</div>
+                    <div class="weekday">Sat</div>
+                </div>
+
+                <div class="calendar-days">
+                    {% for week in month_days %}
+                        {% for day in week %}
+                            {% if day == 0 %}
+                                <div class="calendar-day other-month"></div>
+                            {% else %}
+                                {% set day_date = "%04d-%02d-%02d"|format(year, month, day) %}
+                                {% set is_today = day_date == today.strftime('%Y-%m-%d') %}
+                                <div class="calendar-day {% if is_today %}today{% endif %}" data-date="{{ day_date }}">
+                                    <div class="day-number">{{ day }}</div>
+                                    <button class="add-note-btn" onclick="openNoteModal('{{ day_date }}')">+</button>
+                                    <div class="day-content">
+                                        <!-- Calendar Notes -->
+                                        {% if day_date in notes_by_date %}
+                                            {% for note in notes_by_date[day_date] %}
+                                                <div class="calendar-item calendar-note">
+                                                    <span class="item-text" title="{{ note.content }}">{{ note.content }}</span>
+                                                    <button class="delete-btn" onclick="deleteNote({{ note.id }})">🗑</button>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+
+                                        <!-- Opportunity Reminders -->
+                                        {% if day_date in reminders_by_date %}
+                                            {% for reminder in reminders_by_date[day_date] %}
+                                                <div class="calendar-item calendar-reminder" onclick="goToOpportunity({{ reminder.id }})">
+                                                    <span class="item-text" title="{{ reminder.title }}">{{ reminder.title }}</span>
+                                                    <button class="delete-btn" onclick="deleteReminder({{ reminder.id }}); event.stopPropagation();">🗑</button>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Note Modal -->
+    <div id="note-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Note</h2>
+                <button class="close-button" onclick="closeNoteModal()">&times;</button>
+            </div>
+            <form id="note-form">
+                <div class="form-group">
+                    <label class="form-label" for="note-date">Date</label>
+                    <input type="date" id="note-date" class="form-input" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="note-content">Note</label>
+                    <textarea id="note-content" class="form-textarea" placeholder="Enter your note..." required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeNoteModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Note</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Modal functionality
+        function openNoteModal(date) {
+            const modal = document.getElementById('note-modal');
+            const dateInput = document.getElementById('note-date');
+            const contentInput = document.getElementById('note-content');
+
+            dateInput.value = date;
+            contentInput.value = '';
+            contentInput.focus();
+            modal.classList.add('active');
+        }
+
+        function closeNoteModal() {
+            const modal = document.getElementById('note-modal');
+            modal.classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('note-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeNoteModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeNoteModal();
+            }
+        });
+
+        // Handle note form submission
+        document.getElementById('note-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const date = document.getElementById('note-date').value;
+            const content = document.getElementById('note-content').value.trim();
+
+            if (!content) {
+                alert('Please enter a note');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/calendar_notes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        date: date,
+                        content: content
+                    })
+                });
+
+                if (response.ok) {
+                    location.reload(); // Refresh to show new note
+                } else {
+                    const error = await response.json();
+                    alert('Error adding note: ' + error.error);
+                }
+            } catch (error) {
+                alert('Error adding note: ' + error.message);
+            }
+        });
+
+        // Delete note function
+        async function deleteNote(noteId) {
+            if (!confirm('Are you sure you want to delete this note?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/calendar_notes/${noteId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    location.reload(); // Refresh to remove deleted note
+                } else {
+                    const error = await response.json();
+                    alert('Error deleting note: ' + error.error);
+                }
+            } catch (error) {
+                alert('Error deleting note: ' + error.message);
+            }
+        }
+
+        // Delete reminder function
+        async function deleteReminder(opportunityId) {
+            if (!confirm('Are you sure you want to delete this reminder?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/opportunities/${opportunityId}/reminder`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    location.reload(); // Refresh to remove deleted reminder
+                } else {
+                    const error = await response.json();
+                    alert('Error deleting reminder: ' + error.error);
+                }
+            } catch (error) {
+                alert('Error deleting reminder: ' + error.message);
+            }
+        }
+
+        // Navigate to opportunity
+        function goToOpportunity(opportunityId) {
+            window.location.href = `/opportunities#opp-${opportunityId}`;
+        }
+    </script>
+</body>
+</html>
+
+
+

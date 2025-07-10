@@ -1,957 +1,1531 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bluefin CRM - Contact Details</title>
-  <style>
-    :root {
-      --primary: #004080;
-      --sidebar-bg: #f0f0f0;
-      --card-bg: #ffffff;
-      --text: #333333;
-      --accent: #0066cc;
-      --border: #e0e0e0;
-      --shadow: rgba(0, 0, 0, 0.1);
-      --radius: 8px;
-      --header-height: 60px;
-      --sidebar-width: 200px;
-      --spacing: 16px;
-      --light-gray: #f8f9fa;
-      --success: #28a745;
-      --warning: #ffc107;
-      --danger: #dc3545;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bluefin CRM - Contact Details</title>
+<style>
+  :root {
+    --primary: #004080;
+    --sidebar-bg: #f0f0f0;
+    --card-bg: #ffffff;
+    --text: #333333;
+    --accent: #0066cc;
+    --border: #e0e0e0;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --radius: 8px;
+    --header-height: 60px;
+    --sidebar-width: 200px;
+    --spacing: 16px;
+    --light-gray: #f8f9fa;
+    --success: #28a745;
+    --warning: #ffc107;
+    --danger: #dc3545;
+  }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
 
-    body {
-      color: var(--text);
-      background-color: #f9f9f9;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+  body {
+    color: var(--text);
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
 
-    header {
-      background-color: var(--primary);
-      color: white;
-      height: var(--header-height);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 var(--spacing);
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
-      box-shadow: 0 2px 4px var(--shadow);
-    }
+  header {
+    background-color: var(--primary);
+    color: white;
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--spacing);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    box-shadow: 0 2px 4px var(--shadow);
+  }
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
 
-    .logo {
-      font-size: 1.5rem;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
 
-    .logo img {
-      height: 32px;
-      width: auto;
-    }
+  .logo img {
+    height: 32px;
+    width: auto;
+  }
 
-    .back-button {
-      color: white;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      font-size: 0.9rem;
-      transition: background-color 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+  .back-button {
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-    .back-button:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
+  .back-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
 
-    .main-container {
-      display: flex;
-      margin-top: var(--header-height);
-      min-height: calc(100vh - var(--header-height));
-    }
+  .main-container {
+    display: flex;
+    margin-top: var(--header-height);
+    min-height: calc(100vh - var(--header-height));
+  }
 
-    .sidebar {
-      width: var(--sidebar-width);
-      background-color: var(--sidebar-bg);
-      padding: var(--spacing) 0;
-      flex-shrink: 0;
-    }
+  .sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--sidebar-bg);
+    padding: var(--spacing) 0;
+    flex-shrink: 0;
+  }
 
-    .sidebar-menu {
-      list-style: none;
-    }
+  .sidebar-menu {
+    list-style: none;
+  }
 
-    .sidebar-menu li {
-      padding: 12px var(--spacing);
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
+  .sidebar-menu li {
+    transition: background-color 0.2s;
+  }
 
-    .sidebar-menu li:hover {
-      background-color: rgba(0, 0, 0, 0.05);
-    }
+  .sidebar-menu li a {
+    display: block;
+    padding: 12px var(--spacing);
+    color: var(--text);
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
 
-    .sidebar-menu li.active {
-      background-color: rgba(0, 0, 0, 0.1);
-      border-left: 3px solid var(--accent);
-    }
+  .sidebar-menu li:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
 
-    .content {
-      flex: 1;
-      padding: var(--spacing);
-      max-width: 1200px;
-      margin: 0 auto;
+  .sidebar-menu li.active {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-left: 3px solid var(--accent);
+  }
+
+  .sidebar-menu li.active a {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .content {
+    flex: 1;
+    padding: var(--spacing);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .contact-header {
+    background: white;
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px var(--shadow);
+    display: flex;
+    gap: 2rem;
+  }
+
+  .profile-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .profile-picture-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+  }
+
+  .profile-picture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--border);
+    background-color: var(--light-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.2s;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .profile-picture:hover {
+    border-color: var(--accent);
+  }
+
+  .profile-picture.has-image {
+    font-size: 0;
+  }
+
+  .profile-picture.has-image #profile-initials {
+    display: none;
+  }
+
+  .upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    cursor: pointer;
+    color: white;
+    font-size: 0.9rem;
+  }
+
+  .profile-picture-container:hover .upload-overlay {
+    opacity: 1;
+  }
+
+  .file-input {
+    display: none;
+  }
+
+  .contact-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .contact-name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    border: none;
+    background: transparent;
+    padding: 0;
+    outline: none;
+  }
+
+  .contact-name:focus {
+    background: var(--light-gray);
+    padding: 8px;
+    border-radius: 4px;
+  }
+
+  .contact-title {
+    font-size: 1.2rem;
+    color: #666;
+    border: none;
+    background: transparent;
+    padding: 8px 0;
+    outline: none;
+  }
+
+  .contact-title:focus {
+    background: var(--light-gray);
+    padding: 8px;
+    border-radius: 4px;
+  }
+
+  .contact-title::placeholder {
+    color: #999;
+  }
+
+  .main-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+  }
+
+  .left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  /* Tab Styles */
+  .tab-container {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 8px var(--shadow);
+    overflow: hidden;
+  }
+
+  .tab-header {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab-button {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.2s;
+    border-bottom: 3px solid transparent;
+  }
+
+  .tab-button:hover {
+    background-color: var(--light-gray);
+  }
+
+  .tab-button.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background-color: rgba(0, 102, 204, 0.05);
+  }
+
+  .tab-content {
+    padding: 1.5rem;
+  }
+
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-primary {
+    background-color: var(--accent);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: #0055aa;
+  }
+
+  .btn-secondary {
+    background-color: white;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+
+  .btn-secondary:hover {
+    background-color: #f0f8ff;
+  }
+
+  .btn-danger {
+    background-color: var(--danger);
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background-color: #c82333;
+  }
+
+  .btn-small {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+  }
+
+  .notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .note-item {
+    background: var(--light-gray);
+    border-radius: 6px;
+    padding: 1rem;
+    border-left: 4px solid var(--accent);
+  }
+
+  .note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .note-date {
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .note-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .note-action {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+
+  .note-action:hover {
+    background-color: rgba(0, 102, 204, 0.1);
+  }
+
+  .note-action.delete {
+    color: var(--danger);
+  }
+
+  .note-action.delete:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+  }
+
+  .note-content {
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+
+  /* Accounts Styles */
+  .accounts-summary {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--light-gray);
+    border-radius: 6px;
+    border-left: 4px solid var(--success);
+  }
+
+  .summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .summary-label {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 4px;
+  }
+
+  .summary-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .accounts-table-container {
+    overflow-x: auto;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  .accounts-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    background: white;
+  }
+
+  .accounts-table th {
+    background: var(--light-gray);
+    padding: 12px 8px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--primary);
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .accounts-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .accounts-table tbody tr:hover {
+    background-color: rgba(0, 102, 204, 0.05);
+  }
+
+  .account-status-cell {
+    text-align: center;
+  }
+
+  .account-status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+  }
+
+  .account-status-badge.new {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: var(--success);
+  }
+
+  .account-status-badge.repapered {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #856404;
+  }
+
+  .account-actions-cell {
+    text-align: center;
+  }
+
+  .account-action-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 0.75rem;
+    padding: 4px 6px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+    margin: 0 2px;
+  }
+
+  .account-action-btn:hover {
+    background-color: rgba(0, 102, 204, 0.1);
+  }
+
+  .account-action-btn.delete {
+    color: var(--danger);
+  }
+
+  .account-action-btn.delete:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+  }
+
+  .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .contact-details {
+    background: white;
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+
+  .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .detail-item:last-child {
+    border-bottom: none;
+  }
+
+  .detail-icon {
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .detail-content {
+    flex: 1;
+  }
+
+  .detail-label {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 4px;
+  }
+
+  .detail-value {
+    font-weight: 500;
+    border: none;
+    background: transparent;
+    width: 100%;
+    padding: 4px 0;
+    outline: none;
+  }
+
+  .detail-value:focus {
+    background: var(--light-gray);
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+
+  .detail-value::placeholder {
+    color: #999;
+  }
+
+  .detail-action {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+
+  .detail-action:hover {
+    background-color: rgba(0, 102, 204, 0.1);
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    background-color: white;
+    border-radius: var(--radius);
+    padding: 2rem;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .close-button:hover {
+    color: var(--primary);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-group.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .form-input, .form-textarea, .form-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .form-input:focus, .form-textarea:focus, .form-select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+  }
+
+  .radio-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .radio-option input[type="radio"] {
+    margin: 0;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 1.5rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 2rem;
+  }
+
+  /* Loading state */
+  .loading {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  /* Preview Mode Styles */
+  .preview-banner {
+    background: linear-gradient(135deg, var(--warning), #ffb347);
+    color: #856404;
+    padding: 12px;
+    text-align: center;
+    font-weight: 500;
+    border-bottom: 1px solid #ffc107;
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    z-index: 9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .preview-mode .main-container {
+    margin-top: calc(var(--header-height) + 44px);
+  }
+
+  .preview-placeholder {
+    background: rgba(255, 193, 7, 0.1);
+    border: 2px dashed var(--warning);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: center;
+    color: #856404;
+    font-style: italic;
+  }
+
+  @media (max-width: 768px) {
+    .main-content {
+      grid-template-columns: 1fr;
     }
 
     .contact-header {
-      background: white;
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 2px 8px var(--shadow);
-      display: flex;
-      gap: 2rem;
-    }
-
-    .profile-section {
-      display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .profile-picture-container {
-      position: relative;
-      width: 120px;
-      height: 120px;
-    }
-
-    .profile-picture {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid var(--border);
-      background-color: var(--light-gray);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      color: var(--accent);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .profile-picture:hover {
-      border-color: var(--accent);
-    }
-
-    .profile-picture.has-image {
-      font-size: 0;
-    }
-
-    .upload-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 0.2s;
-      cursor: pointer;
-      color: white;
-      font-size: 0.9rem;
-    }
-
-    .profile-picture-container:hover .upload-overlay {
-      opacity: 1;
-    }
-
-    .file-input {
-      display: none;
-    }
-
-    .contact-info {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .contact-name {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--primary);
-      border: none;
-      background: transparent;
-      padding: 0;
-      outline: none;
-    }
-
-    .contact-name:focus {
-      background: var(--light-gray);
-      padding: 8px;
-      border-radius: 4px;
-    }
-
-    .contact-title {
-      font-size: 1.2rem;
-      color: #666;
-      border: none;
-      background: transparent;
-      padding: 8px 0;
-      outline: none;
-    }
-
-    .contact-title:focus {
-      background: var(--light-gray);
-      padding: 8px;
-      border-radius: 4px;
-    }
-
-    .contact-title::placeholder {
-      color: #999;
-    }
-
-    .main-content {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 2rem;
-    }
-
-    .left-column {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
-
-    .notes-section {
-      background: white;
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      box-shadow: 0 2px 8px var(--shadow);
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .section-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--primary);
-    }
-
-    .btn {
-      padding: 8px 16px;
-      border-radius: 4px;
-      border: none;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-    }
-
-    .btn-primary {
-      background-color: var(--accent);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background-color: #0055aa;
-    }
-
-    .btn-secondary {
-      background-color: white;
-      color: var(--accent);
-      border: 1px solid var(--accent);
-    }
-
-    .btn-secondary:hover {
-      background-color: #f0f8ff;
-    }
-
-    .btn-danger {
-      background-color: var(--danger);
-      color: white;
-    }
-
-    .btn-danger:hover {
-      background-color: #c82333;
-    }
-
-    .notes-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .note-item {
-      background: var(--light-gray);
-      border-radius: 6px;
-      padding: 1rem;
-      border-left: 4px solid var(--accent);
-    }
-
-    .note-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.5rem;
-    }
-
-    .note-date {
-      font-size: 0.85rem;
-      color: #666;
-    }
-
-    .note-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .note-action {
-      background: none;
-      border: none;
-      color: var(--accent);
-      cursor: pointer;
-      font-size: 0.8rem;
-      padding: 4px 8px;
-      border-radius: 4px;
-      transition: background-color 0.2s;
-    }
-
-    .note-action:hover {
-      background-color: rgba(0, 102, 204, 0.1);
-    }
-
-    .note-action.delete {
-      color: var(--danger);
-    }
-
-    .note-action.delete:hover {
-      background-color: rgba(220, 53, 69, 0.1);
-    }
-
-    .note-content {
-      line-height: 1.5;
-      white-space: pre-wrap;
-    }
-
-    .right-column {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .contact-details {
-      background: white;
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      box-shadow: 0 2px 8px var(--shadow);
-    }
-
-    .detail-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .detail-item:last-child {
-      border-bottom: none;
-    }
-
-    .detail-icon {
-      color: var(--accent);
-      flex-shrink: 0;
-    }
-
-    .detail-content {
-      flex: 1;
-    }
-
-    .detail-label {
-      font-size: 0.85rem;
-      color: #666;
-      margin-bottom: 4px;
-    }
-
-    .detail-value {
-      font-weight: 500;
-      border: none;
-      background: transparent;
-      width: 100%;
-      padding: 4px 0;
-      outline: none;
-    }
-
-    .detail-value:focus {
-      background: var(--light-gray);
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
-
-    .detail-value::placeholder {
-      color: #999;
-    }
-
-    .detail-action {
-      color: var(--accent);
-      text-decoration: none;
-      font-size: 0.85rem;
-      padding: 4px 8px;
-      border-radius: 4px;
-      transition: background-color 0.2s;
-    }
-
-    .detail-action:hover {
-      background-color: rgba(0, 102, 204, 0.1);
-    }
-
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .modal.active {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-content {
-      background-color: white;
-      border-radius: var(--radius);
-      padding: 2rem;
-      width: 90%;
-      max-width: 500px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .modal-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--primary);
-    }
-
-    .close-button {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #666;
-      padding: 0;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .close-button:hover {
-      color: var(--primary);
-    }
-
-    .form-group {
-      margin-bottom: 1rem;
-    }
-
-    .form-label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-      color: var(--text);
-    }
-
-    .form-input, .form-textarea {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      font-size: 0.9rem;
-      transition: border-color 0.2s;
-      font-family: inherit;
-    }
-
-    .form-textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
-
-    .form-input:focus, .form-textarea:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
-    }
-
-    .form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 1.5rem;
-    }
-
-    .empty-state {
       text-align: center;
-      color: #666;
-      font-style: italic;
-      padding: 2rem;
     }
 
-    @media (max-width: 768px) {
-      .main-content {
-        grid-template-columns: 1fr;
-      }
-
-      .contact-header {
-        flex-direction: column;
-        text-align: center;
-      }
+    .form-grid {
+      grid-template-columns: 1fr;
     }
-  </style>
+
+    .tab-header {
+      flex-direction: column;
+    }
+
+    .tab-button {
+      border-bottom: none;
+      border-right: 3px solid transparent;
+    }
+
+    .tab-button.active {
+      border-bottom: none;
+      border-right-color: var(--accent);
+    }
+
+    .accounts-summary {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .accounts-table-container {
+      font-size: 0.8rem;
+    }
+  }
+</style>
 </head>
 <body>
-  <header>
-    <div class="header-left">
-      <div class="logo">
-        <img src="/static/logo.png" alt="Bluefin Logo">
-        Bluefin CRM
-      </div>
-      <a href="/templates/card.html" class="back-button">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5"></path>
-          <path d="M12 19l-7-7 7-7"></path>
-        </svg>
-        Back to Contacts
-      </a>
+<header>
+  <div class="header-left">
+    <div class="logo">
+      <img src="/static/logo.png" alt="Bluefin Logo">
+      Bluefin CRM
     </div>
-  </header>
-
-  <div class="main-container">
-    <aside class="sidebar">
-      <ul class="sidebar-menu">
-        <li>Today</li>
-        <li>Calendar</li>
-        <li class="active">Contacts</li>
-        <li>Reports</li>
-        <li>Opportunities</li>
-        <li>Seminars</li>
-        <li>Workflows</li>
-      </ul>
-    </aside>
-
-    <main class="content">
-      <div class="contact-header">
-        <div class="profile-section">
-          <div class="profile-picture-container">
-            <div class="profile-picture" id="profile-picture">
-              <span id="profile-initials"></span>
-            </div>
-            <div class="upload-overlay" onclick="document.getElementById('profile-upload').click()">
-              Upload Photo
-            </div>
-            <input type="file" id="profile-upload" class="file-input" accept="image/*">
-          </div>
-        </div>
-
-        <div class="contact-info">
-          <input type="text" class="contact-name" id="contact-name" placeholder="Contact Name">
-          <input type="text" class="contact-title" id="contact-title" placeholder="Job Title">
-        </div>
-      </div>
-
-      <div class="main-content">
-        <div class="left-column">
-          <div class="notes-section">
-            <div class="section-header">
-              <h3 class="section-title">Notes</h3>
-              <button class="btn btn-primary" id="add-note-btn">+ Create Note</button>
-            </div>
-            <div class="notes-list" id="notes-list">
-              <div class="empty-state">No notes yet. Click "Create Note" to add your first note.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="right-column">
-          <div class="contact-details">
-            <h3 class="section-title" style="margin-bottom: 1.5rem;">Contact Information</h3>
-
-            <div class="detail-item">
-              <div class="detail-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                  <polyline points="22,6 12,13 2,6"></polyline>
-                </svg>
-              </div>
-              <div class="detail-content">
-                <div class="detail-label">Email</div>
-                <input type="email" class="detail-value" id="contact-email" placeholder="Enter email address">
-              </div>
-              <a href="#" class="detail-action" id="email-action">Send</a>
-            </div>
-
-            <div class="detail-item">
-              <div class="detail-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                </svg>
-              </div>
-              <div class="detail-content">
-                <div class="detail-label">Phone</div>
-                <input type="tel" class="detail-value" id="contact-phone" placeholder="Enter phone number">
-              </div>
-              <a href="#" class="detail-action" id="phone-action">Call</a>
-            </div>
-
-            <div class="detail-item">
-              <div class="detail-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M3 21h18"></path>
-                  <path d="M5 21V7l8-4v18"></path>
-                  <path d="M19 21V11l-6-4"></path>
-                </svg>
-              </div>
-              <div class="detail-content">
-                <div class="detail-label">Firm</div>
-                <input type="text" class="detail-value" id="contact-firm" placeholder="Enter firm name">
-              </div>
-            </div>
-
-            <div class="detail-item">
-              <div class="detail-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                  <circle cx="12" cy="10" r="3"></circle>
-                </svg>
-              </div>
-              <div class="detail-content">
-                <div class="detail-label">Address</div>
-                <input type="text" class="detail-value" id="contact-address" placeholder="Enter address">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
+    <a href="/contacts" class="back-button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5"></path>
+        <path d="M12 19l-7-7 7-7"></path>
+      </svg>
+      Back to Contacts
+    </a>
   </div>
+</header>
 
-  <!-- Add Note Modal -->
-  <div id="add-note-modal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title">Create New Note</h2>
-        <button class="close-button" id="close-note-modal">&times;</button>
+<div class="main-container">
+  <aside class="sidebar">
+    <ul class="sidebar-menu">
+      <li><a href="/">Today</a></li>
+      <li><a href="/opportunities">Calendar</a></li>
+      <li class="active"><a href="/contacts">Contacts</a></li>
+      <li><a href="/analytics&reports">Reports</a></li>
+      <li><a href="/opportunities">Opportunities</a></li>
+      <li><a href="/seminars">Seminars</a></li>
+      <li><a href="/upload">Workflows</a></li>
+    </ul>
+  </aside>
+
+  <main class="content">
+    <div class="contact-header">
+      <div class="profile-section">
+        <div class="profile-picture-container">
+          <div class="profile-picture" id="profile-picture"
+               {% if contact.profile_picture %}
+               style="background-image: url('{{ contact.profile_picture }}');"
+               {% endif %}>
+            <span id="profile-initials" {% if contact.profile_picture %}style="display: none;"{% endif %}>
+              {% if contact.name %}
+                {% set name_parts = contact.name.split() %}
+                {% if name_parts|length >= 2 %}
+                  {{ name_parts[0][0].upper() + name_parts[-1][0].upper() }}
+                {% else %}
+                  {{ name_parts[0][:2].upper() }}
+                {% endif %}
+              {% else %}
+                NA
+              {% endif %}
+            </span>
+          </div>
+          <div class="upload-overlay" onclick="document.getElementById('profile-upload').click()">
+            Upload Photo
+          </div>
+          <form id="profile-upload-form" action="/upload_profile_picture" method="POST" enctype="multipart/form-data" style="display: none;">
+            <input type="hidden" name="contact_id" value="{{ contact.id }}">
+            <input type="file" id="profile-upload" name="profile_picture" class="file-input" accept="image/*">
+          </form>
+        </div>
       </div>
-      <form id="add-note-form">
+
+      <div class="contact-info">
+        <form id="contact-form" action="/update_contact" method="POST">
+          <input type="hidden" id="contact-id" name="contact_id" value="{{ contact.id }}">
+          <input type="text" class="contact-name" id="contact-name" name="name" value="{{ contact.name or '' }}" placeholder="Contact Name">
+          <input type="text" class="contact-title" id="contact-title" name="title" value="{{ contact.title or '' }}" placeholder="Job Title">
+        </form>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="left-column">
+        <div class="tab-container">
+          <div class="tab-header">
+            <button class="tab-button active" data-tab="notes">Notes</button>
+            <button class="tab-button" data-tab="accounts">Registered Accounts</button>
+          </div>
+
+          <div class="tab-content">
+            <!-- Notes Tab Panel -->
+            <div class="tab-panel active" id="notes-panel">
+              <div class="section-header">
+                <h3 class="section-title">Notes</h3>
+                <button class="btn btn-primary" id="add-note-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  Create Note
+                </button>
+              </div>
+              <div class="notes-list" id="notes-list">
+                {% if notes %}
+                  {% for note in notes %}
+                  <div class="note-item">
+                    <div class="note-header">
+                      <div class="note-date">{{ note.created_at[:10] }} at {{ note.created_at[11:16] }}</div>
+                      <div class="note-actions">
+                        <button class="note-action" onclick="editNote('{{ note.id }}', '{{ note.content }}')">Edit</button>
+                        <button class="note-action delete" onclick="deleteNote('{{ note.id }}')">Delete</button>
+                      </div>
+                    </div>
+                    <div class="note-content">{{ note.content }}</div>
+                  </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="empty-state">No notes yet. Click "Create Note" to add your first note.</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Registered Accounts Tab Panel -->
+            <div class="tab-panel" id="accounts-panel">
+              <div class="section-header">
+                <h3 class="section-title">Registered Accounts</h3>
+                <button class="btn btn-primary" id="add-account-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  Add Account
+                </button>
+              </div>
+
+              <!-- AUM Tracker and Active Accounts Counter -->
+              {% if accounts %}
+                {% set total_aum = 0 %}
+                {% for account in accounts %}
+                  {% if account.inception_value and account.inception_value != 0 %}
+                    {% set total_aum = total_aum + account.inception_value %}
+                  {% endif %}
+                {% endfor %}
+                {% set active_count = accounts|length %}
+                <div class="accounts-summary">
+                  <div class="summary-item">
+                    <div class="summary-label">Total AUM</div>
+                    <div class="summary-value">${{ "{:,.0f}".format(total_aum) }}</div>
+                  </div>
+                  <div class="summary-item">
+                    <div class="summary-label">Active Accounts</div>
+                    <div class="summary-value">{{ active_count }}</div>
+                  </div>
+                </div>
+              {% endif %}
+
+              <!-- Accounts Table -->
+              <div class="accounts-table-container">
+                {% if accounts %}
+                  <table class="accounts-table">
+                    <thead>
+                      <tr>
+                        <th>Account #</th>
+                        <th>Client</th>
+                        <th>Strategy</th>
+                        <th>Inception Value</th>
+                        <th>Fee %</th>
+                        <th>Open Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for account in accounts %}
+                      <tr>
+                        <td>{{ account.account_number or '-' }}</td>
+                        <td>{{ account.client_name or '-' }}</td>
+                        <td>{{ account.strategy or '-' }}</td>
+                        <td>${{ "{:,.0f}".format(account.inception_value) if account.inception_value else '-' }}</td>
+                        <td>{{ "{}%".format(account.fee_percent) if account.fee_percent else '-' }}</td>
+                        <td>{{ account.open_date or '-' }}</td>
+                        <td class="account-status-cell">
+                          <span class="account-status-badge {{ account.status.lower() }}">{{ account.status }}</span>
+                        </td>
+                        <td class="account-actions-cell">
+                          <button class="account-action-btn" onclick="editAccount('{{ account.id }}')">Edit</button>
+                          <button class="account-action-btn delete" onclick="deleteAccount('{{ account.id }}')">Delete</button>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                {% else %}
+                  <div class="empty-state">No registered accounts yet. Click "Add Account" to add the first account.</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-column">
+        <div class="contact-details">
+          <h3 class="section-title" style="margin-bottom: 1.5rem;">Contact Information</h3>
+
+          <div class="detail-item">
+            <div class="detail-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </div>
+            <div class="detail-content">
+              <div class="detail-label">Email</div>
+              <input type="email" class="detail-value" id="contact-email" name="email" value="{{ contact.email or '' }}" placeholder="Enter email address">
+            </div>
+            <a href="mailto:{{ contact.email or '' }}" class="detail-action" id="email-action">Send</a>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+            </div>
+            <div class="detail-content">
+              <div class="detail-label">Phone</div>
+              <input type="tel" class="detail-value" id="contact-phone" name="phone" value="{{ contact.phone or '' }}" placeholder="Enter phone number">
+            </div>
+            <a href="tel:{{ contact.phone or '' }}" class="detail-action" id="phone-action">Call</a>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 21h18"></path>
+                <path d="M5 21V7l8-4v18"></path>
+                <path d="M19 21V11l-6-4"></path>
+              </svg>
+            </div>
+            <div class="detail-content">
+              <div class="detail-label">Firm</div>
+              <input type="text" class="detail-value" id="contact-firm" name="firm" value="{{ contact.firm or '' }}" placeholder="Enter firm name">
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+            </div>
+            <div class="detail-content">
+              <div class="detail-label">Address</div>
+              <input type="text" class="detail-value" id="contact-address" name="address" value="{{ contact.address or '' }}" placeholder="Enter address">
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14,2 14,8 20,8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10,9 9,9 8,9"></polyline>
+              </svg>
+            </div>
+            <div class="detail-content">
+              <div class="detail-label">CRD Number</div>
+              <input type="text" class="detail-value" id="contact-crd-number" name="crd_number" value="{{ contact.crd_number or '' }}" placeholder="Enter CRD number">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Add Note Modal -->
+<div id="add-note-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">Create New Note</h2>
+      <button class="close-button" id="close-note-modal">&times;</button>
+    </div>
+    <form id="add-note-form" action="/add_contact_note" method="POST">
+      <input type="hidden" name="contact_id" value="{{ contact.id }}">
+      <div class="form-group">
+        <label class="form-label" for="note-content">Note</label>
+        <textarea id="note-content" name="content" class="form-textarea" placeholder="Enter your note here..." required></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="cancel-note-btn">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Note</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Account Modal -->
+<div id="add-account-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">Add Registered Account</h2>
+      <button class="close-button" id="close-account-modal">&times;</button>
+    </div>
+    <form id="add-account-form" action="/add_registered_account" method="POST">
+      <input type="hidden" name="contact_id" value="{{ contact.id }}">
+
+      <div class="form-grid">
         <div class="form-group">
-          <label class="form-label" for="note-content">Note</label>
-          <textarea id="note-content" class="form-textarea" placeholder="Enter your note here..." required></textarea>
+          <label class="form-label" for="account-number">Account #</label>
+          <input type="text" id="account-number" name="account_number" class="form-input" placeholder="Enter account number">
         </div>
-        <div class="form-actions">
-          <button type="button" class="btn btn-secondary" id="cancel-note-btn">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Note</button>
+
+        <div class="form-group">
+          <label class="form-label" for="client-name">Client</label>
+          <input type="text" id="client-name" name="client_name" class="form-input" placeholder="Enter client name">
         </div>
-      </form>
-    </div>
-  </div>
 
-  <script>
-    // Get contact ID from URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const contactId = urlParams.get('id');
+        <div class="form-group">
+          <label class="form-label" for="strategy">Strategy</label>
+          <select id="strategy" name="strategy" class="form-select">
+            <option value="">Select Strategy</option>
+            <option value="EDIP">EDIP</option>
+            <option value="GRIP">GRIP</option>
+            <option value="HETF">HETF</option>
+            <option value="TT">TT</option>
+            <option value="CEDIP">CEDIP</option>
+          </select>
+        </div>
 
-    let currentContact = null;
-    let contactNotes = [];
+        <div class="form-group">
+          <label class="form-label" for="inception-value">Inception Value</label>
+          <input type="number" id="inception-value" name="inception_value" class="form-input" step="0.01" placeholder="0.00">
+        </div>
 
-    // Load contact data
-    function loadContact() {
-      const savedContacts = localStorage.getItem('crmContacts');
-      if (savedContacts) {
-        const contacts = JSON.parse(savedContacts);
-        currentContact = contacts[contactId];
+        <div class="form-group">
+          <label class="form-label" for="fee-percent">Fee %</label>
+          <input type="number" id="fee-percent" name="fee_percent" class="form-input" step="0.01" min="0" max="100" placeholder="0.00">
+        </div>
 
-        if (currentContact) {
-          // Populate contact information
-          document.getElementById('contact-name').value = currentContact.name || '';
-          document.getElementById('contact-title').value = currentContact.title || '';
-          document.getElementById('contact-email').value = currentContact.email || '';
-          document.getElementById('contact-phone').value = currentContact.phone || '';
-          document.getElementById('contact-firm').value = currentContact.firm || '';
-          document.getElementById('contact-address').value = currentContact.address || '';
+        <div class="form-group">
+          <label class="form-label" for="open-date">Date</label>
+          <input type="date" id="open-date" name="open_date" class="form-input">
+        </div>
+      </div>
 
-          // Set profile initials
-          updateProfileInitials();
-
-          // Load profile picture if exists
-          if (currentContact.profilePicture) {
-            const profilePic = document.getElementById('profile-picture');
-            profilePic.style.backgroundImage = `url(${currentContact.profilePicture})`;
-            profilePic.style.backgroundSize = 'cover';
-            profilePic.style.backgroundPosition = 'center';
-            profilePic.classList.add('has-image');
-          }
-
-          // Load notes
-          loadNotes();
-        }
-      }
-    }
-
-    // Update profile initials
-    function updateProfileInitials() {
-      const name = document.getElementById('contact-name').value;
-      const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-      document.getElementById('profile-initials').textContent = initials;
-    }
-
-    // Save contact data
-    function saveContact() {
-      if (!currentContact) return;
-
-      const savedContacts = localStorage.getItem('crmContacts');
-      if (savedContacts) {
-        const contacts = JSON.parse(savedContacts);
-
-        // Update contact data
-        contacts[contactId] = {
-          ...currentContact,
-          name: document.getElementById('contact-name').value,
-          title: document.getElementById('contact-title').value,
-          email: document.getElementById('contact-email').value,
-          phone: document.getElementById('contact-phone').value,
-          firm: document.getElementById('contact-firm').value,
-          address: document.getElementById('contact-address').value
-        };
-
-        localStorage.setItem('crmContacts', JSON.stringify(contacts));
-        currentContact = contacts[contactId];
-      }
-    }
-
-    // Load notes
-    function loadNotes() {
-      const savedNotes = localStorage.getItem(`crmNotes_${contactId}`);
-      if (savedNotes) {
-        contactNotes = JSON.parse(savedNotes);
-      }
-      renderNotes();
-    }
-
-    // Save notes
-    function saveNotes() {
-      localStorage.setItem(`crmNotes_${contactId}`, JSON.stringify(contactNotes));
-    }
-
-    // Render notes
-    function renderNotes() {
-      const notesList = document.getElementById('notes-list');
-
-      if (contactNotes.length === 0) {
-        notesList.innerHTML = '<div class="empty-state">No notes yet. Click "Create Note" to add your first note.</div>';
-        return;
-      }
-
-      notesList.innerHTML = contactNotes.map((note, index) => `
-        <div class="note-item">
-          <div class="note-header">
-            <div class="note-date">${new Date(note.date).toLocaleDateString()} at ${new Date(note.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-            <div class="note-actions">
-              <button class="note-action" onclick="editNote(${index})">Edit</button>
-              <button class="note-action delete" onclick="deleteNote(${index})">Delete</button>
-            </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <div class="radio-group">
+          <div class="radio-option">
+            <input type="radio" id="status-new" name="status" value="New" checked>
+            <label for="status-new">New</label>
           </div>
-          <div class="note-content">${note.content}</div>
+          <div class="radio-option">
+            <input type="radio" id="status-repapered" name="status" value="Repapered">
+            <label for="status-repapered">Repapered</label>
+          </div>
         </div>
-      `).join('');
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="cancel-account-btn">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Account</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Account Modal -->
+<div id="edit-account-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">Edit Registered Account</h2>
+      <button class="close-button" id="close-edit-account-modal">&times;</button>
+    </div>
+    <form id="edit-account-form" method="POST">
+      <input type="hidden" id="edit-account-id" name="account_id">
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="edit-account-number">Account #</label>
+          <input type="text" id="edit-account-number" name="account_number" class="form-input" placeholder="Enter account number">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit-client-name">Client</label>
+          <input type="text" id="edit-client-name" name="client_name" class="form-input" placeholder="Enter client name">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit-strategy">Strategy</label>
+          <select id="edit-strategy" name="strategy" class="form-select">
+            <option value="">Select Strategy</option>
+            <option value="EDIP">EDIP</option>
+            <option value="GRIP">GRIP</option>
+            <option value="HETF">HETF</option>
+            <option value="TT">TT</option>
+            <option value="CEDIP">CEDIP</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit-inception-value">Inception Value</label>
+          <input type="number" id="edit-inception-value" name="inception_value" class="form-input" step="0.01" placeholder="0.00">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit-fee-percent">Fee %</label>
+          <input type="number" id="edit-fee-percent" name="fee_percent" class="form-input" step="0.01" min="0" max="100" placeholder="0.00">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit-open-date">Date</label>
+          <input type="date" id="edit-open-date" name="open_date" class="form-input">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <div class="radio-group">
+          <div class="radio-option">
+            <input type="radio" id="edit-status-new" name="status" value="New">
+            <label for="edit-status-new">New</label>
+          </div>
+          <div class="radio-option">
+            <input type="radio" id="edit-status-repapered" name="status" value="Repapered">
+            <label for="edit-status-repapered">Repapered</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="cancel-edit-account-btn">Cancel</button>
+        <button type="submit" class="btn btn-primary">Update Account</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const contactId = {{ contact.id }};
+  const isLocalPreview = window.location.protocol === 'file:';
+
+  // Tab functionality
+  function initializeTabs() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const targetTab = button.getAttribute('data-tab');
+
+        // Remove active class from all buttons and panels
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabPanels.forEach(panel => panel.classList.remove('active'));
+
+        // Add active class to clicked button and corresponding panel
+        button.classList.add('active');
+        document.getElementById(`${targetTab}-panel`).classList.add('active');
+      });
+    });
+  }
+
+  // Update profile initials when name changes
+  function updateProfileInitials() {
+    const name = document.getElementById('contact-name').value;
+    const nameParts = name.trim().split(' ').filter(part => part.length > 0);
+    let initials = 'NA';
+
+    if (nameParts.length >= 2) {
+      // First letter of first name + first letter of last name
+      initials = nameParts[0][0].toUpperCase() + nameParts[nameParts.length - 1][0].toUpperCase();
+    } else if (nameParts.length === 1) {
+      // First two letters of single name
+      initials = nameParts[0].slice(0, 2).toUpperCase();
     }
 
-    // Add note
-    function addNote(content) {
-      const newNote = {
-        id: Date.now(),
-        content: content,
-        date: new Date().toISOString()
+    document.getElementById('profile-initials').textContent = initials;
+  }
+
+  // Auto-save contact information on input
+  document.querySelectorAll('#contact-name, #contact-title, #contact-email, #contact-phone, #contact-firm, #contact-address, #contact-crd-number').forEach(input => {
+    input.addEventListener('blur', function() {
+      // Auto-submit the form when fields lose focus
+      document.getElementById('contact-form').submit();
+    });
+
+    // Update initials when name changes
+    if (input.id === 'contact-name') {
+      input.addEventListener('input', updateProfileInitials);
+    }
+  });
+
+  // Profile picture upload with auto-submit
+  document.getElementById('profile-upload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      // Show preview immediately
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const profilePic = document.getElementById('profile-picture');
+        profilePic.style.backgroundImage = `url(${e.target.result})`;
+        profilePic.classList.add('has-image');
+        document.getElementById('profile-initials').style.display = 'none';
       };
+      reader.readAsDataURL(file);
 
-      contactNotes.unshift(newNote); // Add to beginning
-      saveNotes();
-      renderNotes();
+      // Auto-submit the form
+      document.getElementById('profile-upload-form').submit();
     }
+  });
 
-    // Delete note
-    function deleteNote(index) {
-      if (confirm('Are you sure you want to delete this note?')) {
-        contactNotes.splice(index, 1);
-        saveNotes();
-        renderNotes();
+  // Modal functionality
+  const noteModal = document.getElementById('add-note-modal');
+  const accountModal = document.getElementById('add-account-modal');
+  const editAccountModal = document.getElementById('edit-account-modal');
+  const addNoteBtn = document.getElementById('add-note-btn');
+  const addAccountBtn = document.getElementById('add-account-btn');
+  const closeNoteModalBtn = document.getElementById('close-note-modal');
+  const closeAccountModalBtn = document.getElementById('close-account-modal');
+  const closeEditAccountModalBtn = document.getElementById('close-edit-account-modal');
+  const cancelNoteBtn = document.getElementById('cancel-note-btn');
+  const cancelAccountBtn = document.getElementById('cancel-account-btn');
+  const cancelEditAccountBtn = document.getElementById('cancel-edit-account-btn');
+  const addNoteForm = document.getElementById('add-note-form');
+  const addAccountForm = document.getElementById('add-account-form');
+  const editAccountForm = document.getElementById('edit-account-form');
+
+  // Open modals
+  addNoteBtn.addEventListener('click', function() {
+    noteModal.classList.add('active');
+    document.getElementById('note-content').focus();
+  });
+
+  addAccountBtn.addEventListener('click', function() {
+    accountModal.classList.add('active');
+    document.getElementById('account-number').focus();
+  });
+
+  // Close modals
+  function closeNoteModal() {
+    noteModal.classList.remove('active');
+    addNoteForm.reset();
+  }
+
+  function closeAccountModal() {
+    accountModal.classList.remove('active');
+    addAccountForm.reset();
+  }
+
+  function closeEditAccountModal() {
+    editAccountModal.classList.remove('active');
+    editAccountForm.reset();
+  }
+
+  closeNoteModalBtn.addEventListener('click', closeNoteModal);
+  closeAccountModalBtn.addEventListener('click', closeAccountModal);
+  closeEditAccountModalBtn.addEventListener('click', closeEditAccountModal);
+  cancelNoteBtn.addEventListener('click', closeNoteModal);
+  cancelAccountBtn.addEventListener('click', closeAccountModal);
+  cancelEditAccountBtn.addEventListener('click', closeEditAccountModal);
+
+  // Close modals when clicking outside
+  noteModal.addEventListener('click', function(e) {
+    if (e.target === noteModal) {
+      closeNoteModal();
+    }
+  });
+
+  accountModal.addEventListener('click', function(e) {
+    if (e.target === accountModal) {
+      closeAccountModal();
+    }
+  });
+
+  editAccountModal.addEventListener('click', function(e) {
+    if (e.target === editAccountModal) {
+      closeEditAccountModal();
+    }
+  });
+
+  // Close modals with Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      if (noteModal.classList.contains('active')) {
+        closeNoteModal();
+      }
+      if (accountModal.classList.contains('active')) {
+        closeAccountModal();
+      }
+      if (editAccountModal.classList.contains('active')) {
+        closeEditAccountModal();
       }
     }
+  });
 
-    // Edit note
-    function editNote(index) {
-      const note = contactNotes[index];
-      const newContent = prompt('Edit note:', note.content);
-
-      if (newContent !== null && newContent.trim() !== '') {
-        contactNotes[index].content = newContent.trim();
-        contactNotes[index].date = new Date().toISOString(); // Update timestamp
-        saveNotes();
-        renderNotes();
-      }
+  // Note and account management functions
+  function editNote(noteId, content) {
+    const newContent = prompt('Edit note:', content);
+    if (newContent !== null && newContent.trim() !== '') {
+      // In a real implementation, you'd send this to the server
+      alert('Note editing will be implemented with backend integration.');
     }
+  }
 
-    // Profile picture upload
-    document.getElementById('profile-upload').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const profilePic = document.getElementById('profile-picture');
-          profilePic.style.backgroundImage = `url(${e.target.result})`;
-          profilePic.style.backgroundSize = 'cover';
-          profilePic.style.backgroundPosition = 'center';
-          profilePic.classList.add('has-image');
-
-          // Save to contact data
-          if (currentContact) {
-            currentContact.profilePicture = e.target.result;
-            saveContact();
-          }
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Auto-save contact information on input
-    document.querySelectorAll('#contact-name, #contact-title, #contact-email, #contact-phone, #contact-firm, #contact-address').forEach(input => {
-      input.addEventListener('blur', saveContact);
-
-      // Update initials when name changes
-      if (input.id === 'contact-name') {
-        input.addEventListener('input', updateProfileInitials);
-      }
-    });
-
-    // Modal functionality
-    const modal = document.getElementById('add-note-modal');
-    const addNoteBtn = document.getElementById('add-note-btn');
-    const closeModalBtn = document.getElementById('close-note-modal');
-    const cancelBtn = document.getElementById('cancel-note-btn');
-    const addNoteForm = document.getElementById('add-note-form');
-
-    // Open modal
-    addNoteBtn.addEventListener('click', function() {
-      modal.classList.add('active');
-      document.getElementById('note-content').focus();
-    });
-
-    // Close modal
-    function closeModal() {
-      modal.classList.remove('active');
-      addNoteForm.reset();
+  function deleteNote(noteId) {
+    if (confirm('Are you sure you want to delete this note?')) {
+      fetch(`/delete_contact_note/${noteId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          location.reload(); // Refresh to show updated notes
+        } else {
+          alert('Error deleting note: ' + data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error deleting note');
+      });
     }
+  }
 
-    closeModalBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
+  // Enhanced editAccount function with full functionality
+  function editAccount(accountId) {
+    // Show loading state
+    const editBtn = event.target;
+    const originalText = editBtn.textContent;
+    editBtn.textContent = 'Loading...';
+    editBtn.disabled = true;
 
-    // Close modal when clicking outside
-    modal.addEventListener('click', function(e) {
-      if (e.target === modal) {
-        closeModal();
-      }
-    });
+    // Fetch account data
+    fetch(`/get_registered_account/${accountId}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch account data');
+        }
+        return response.json();
+      })
+      .then(account => {
+        // Populate the edit form
+        document.getElementById('edit-account-id').value = account.id;
+        document.getElementById('edit-account-number').value = account.account_number || '';
+        document.getElementById('edit-client-name').value = account.client_name || '';
+        document.getElementById('edit-strategy').value = account.strategy || '';
+        document.getElementById('edit-inception-value').value = account.inception_value || '';
+        document.getElementById('edit-fee-percent').value = account.fee_percent || '';
+        document.getElementById('edit-open-date').value = account.open_date || '';
 
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && modal.classList.contains('active')) {
-        closeModal();
-      }
-    });
+        // Set status radio button
+        if (account.status === 'New') {
+          document.getElementById('edit-status-new').checked = true;
+        } else if (account.status === 'Repapered') {
+          document.getElementById('edit-status-repapered').checked = true;
+        }
 
-    // Handle note form submission
-    addNoteForm.addEventListener('submit', function(e) {
-      e.preventDefault();
+        // Set form action
+        editAccountForm.action = `/update_registered_account/${account.id}`;
 
-      const content = document.getElementById('note-content').value.trim();
-      if (content) {
-        addNote(content);
-        closeModal();
-      }
-    });
+        // Show the modal
+        editAccountModal.classList.add('active');
+        document.getElementById('edit-account-number').focus();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error loading account data: ' + error.message);
+      })
+      .finally(() => {
+        // Reset button state
+        editBtn.textContent = originalText;
+        editBtn.disabled = false;
+      });
+  }
 
-    // Email and phone actions
-    document.getElementById('email-action').addEventListener('click', function(e) {
-      e.preventDefault();
-      const email = document.getElementById('contact-email').value;
-      if (email) {
-        window.location.href = `mailto:${email}`;
-      }
-    });
-
-    document.getElementById('phone-action').addEventListener('click', function(e) {
-      e.preventDefault();
-      const phone = document.getElementById('contact-phone').value;
-      if (phone) {
-        window.location.href = `tel:${phone}`;
-      }
-    });
-
-    // Initialize page
-    if (contactId !== null) {
-      loadContact();
-    } else {
-      // Redirect back if no contact ID
-      window.location.href = 'index.html';
+  function deleteAccount(accountId) {
+    if (confirm('Are you sure you want to delete this account?')) {
+      fetch(`/delete_registered_account/${accountId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          location.reload(); // Refresh to show updated accounts
+        } else {
+          alert('Error deleting account: ' + data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error deleting account');
+      });
     }
-  </script>
+  }
+
+  // Initialize page
+  initializeTabs();
+</script>
 </body>
 </html>
